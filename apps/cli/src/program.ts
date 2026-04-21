@@ -47,6 +47,7 @@ function getHelpLines(): string[] {
 		"  syncdown run --integration <integration-id>",
 		`  syncdown run --reset [--connector <${connectorUsage}>|--integration <integration-id>]`,
 		"  syncdown run --watch [--interval <5m|15m|1h|6h|24h>]",
+		"  syncdown push",
 		"  syncdown reset --yes",
 		"  syncdown connectors",
 		"  syncdown doctor",
@@ -248,7 +249,8 @@ export async function runCli(
 				interactiveTerminal: isInteractiveTerminal(),
 				secrets,
 			});
-		case "run": {
+			case "run":
+			case "push": {
 			const runOptions = parseRunOptions(argv.slice(3), io);
 			if (!runOptions) {
 				return EXIT_CODES.CONFIG_ERROR;

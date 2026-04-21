@@ -22,6 +22,7 @@ import {
 const GOOGLE_CALENDAR_API_BASE_URL = "https://www.googleapis.com/calendar/v3/";
 export const GOOGLE_CALENDAR_REQUIRED_SCOPES = [
 	"https://www.googleapis.com/auth/calendar.readonly",
+	"https://www.googleapis.com/auth/calendar.events",
 ] as const;
 
 const CURSOR_VERSION = 1;
@@ -85,6 +86,27 @@ export interface GoogleCalendarAdapter {
 			syncToken?: string;
 		},
 	): Promise<GoogleCalendarEventsPage>;
+	getEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+	): Promise<GoogleCalendarEvent>;
+	createEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventData: GoogleCalendarEvent,
+	): Promise<GoogleCalendarEvent>;
+	updateEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+		eventData: GoogleCalendarEvent,
+	): Promise<GoogleCalendarEvent>;
+	deleteEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+	): Promise<void>;
 }
 
 interface GoogleCalendarListResponse {
@@ -143,6 +165,8 @@ class OfficialGoogleCalendarAdapter implements GoogleCalendarAdapter {
 		credentials: CalendarCredentials,
 		path: string,
 		params: Record<string, string | number | boolean | undefined> = {},
+		method: string = "GET",
+		body?: any,
 	): Promise<T> {
 		const url = new URL(path, GOOGLE_CALENDAR_API_BASE_URL);
 		for (const [key, value] of Object.entries(params)) {
@@ -152,12 +176,25 @@ class OfficialGoogleCalendarAdapter implements GoogleCalendarAdapter {
 			url.searchParams.set(key, String(value));
 		}
 
+		const headers: Record<string, string> = {
+			authorization: `Bearer ${await this.getAccessToken(credentials)}`,
+			accept: "application/json",
+		};
+
+		if (body) {
+			headers["content-type"] = "application/json";
+		}
+
 		const response = await fetch(url, {
-			headers: {
-				authorization: `Bearer ${await this.getAccessToken(credentials)}`,
-				accept: "application/json",
-			},
+			method,
+			headers,
+			body: body ? JSON.stringify(body) : undefined,
 		});
+
+		if (response.status === 204) {
+			return {} as T;
+		}
+
 		const payload = await parseJsonResponse<T & GoogleCalendarEventsResponse>(
 			response,
 		);
@@ -248,6 +285,61 @@ class OfficialGoogleCalendarAdapter implements GoogleCalendarAdapter {
 
 			throw error;
 		}
+	}
+
+	async createEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventData: GoogleCalendarEvent,
+	): Promise<GoogleCalendarEvent> {
+		return this.request<GoogleCalendarEvent>(
+			credentials,
+			`calendars/${encodeURIComponent(calendarId)}/events`,
+			{},
+			"POST",
+			eventData,
+		);
+	}
+
+	async getEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+	): Promise<GoogleCalendarEvent> {
+		return this.request<GoogleCalendarEvent>(
+			credentials,
+			`calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+			{},
+			"GET",
+		);
+	}
+
+	async updateEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+		eventData: GoogleCalendarEvent,
+	): Promise<GoogleCalendarEvent> {
+		return this.request<GoogleCalendarEvent>(
+			credentials,
+			`calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+			{},
+			"PATCH",
+			eventData,
+		);
+	}
+
+	async deleteEvent(
+		credentials: CalendarCredentials,
+		calendarId: string,
+		eventId: string,
+	): Promise<void> {
+		return this.request<void>(
+			credentials,
+			`calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+			{},
+			"DELETE",
+		);
 	}
 }
 
@@ -783,6 +875,151 @@ class GoogleCalendarConnector implements Connector {
 				selectedCalendarIds,
 				syncTokens,
 			}),
+		};
+	}
+
+	async push(
+		request: import("@syncdown/core").ConnectorPushRequest,
+	): Promise<import("@syncdown/core").ConnectorPushResult> {
+		if (request.integration.connectorId !== "google-calendar") {
+			throw new Error("Invalid integration for Google Calendar connector");
+		}
+
+		const credentials = await getCredentials(request);
+		const pushedIds: string[] = [];
+		const failedIds: string[] = [];
+
+		// Try to verify events scope. If missing, we can't push.
+		try {
+			await assertGoogleGrantedScopes(
+				fetch,
+				credentials,
+				["https://www.googleapis.com/auth/calendar.events"],
+			);
+		} catch (error) {
+			request.io.error(
+				"Google Calendar push failed: Missing 'calendar.events' scope. You may need to re-authenticate or update the connection.",
+			);
+			return { success: false, pushedIds, failedIds: [...request.createdSources.map(s => s.sourceId), ...request.updatedSources.map(s => s.sourceId), ...request.deletedSourceIds] };
+		}
+
+		const calendars = await this.adapter.listCalendars(credentials);
+		const calendarMap = new Map(calendars.map((c) => [c.id, c]));
+		const calendarSummaryMap = new Map(calendars.map((c) => [c.summary, c.id]));
+
+		// Helper to find calendar id
+		const getCalendarId = (snapshot: import("@syncdown/core").SourceSnapshot) => {
+			const explicitlySet = snapshot.metadata.calendarId as string | undefined;
+			if (explicitlySet && calendarMap.has(explicitlySet)) {
+				return explicitlySet;
+			}
+			const byName = snapshot.metadata.calendarName as string | undefined;
+			if (byName && calendarSummaryMap.has(byName)) {
+				return calendarSummaryMap.get(byName);
+			}
+			return getSelectedCalendarIds(request)[0]; // fallback to first selected
+		};
+
+		const toEventDateTime = (val: unknown, allDay?: unknown): GoogleCalendarEventDateTime | null => {
+			if (typeof val !== "string") return null;
+			if (allDay === true || allDay === "true") return { date: val.split("T")[0] };
+			return { dateTime: val };
+		};
+
+		const createdSourceMappings: Record<string, import("@syncdown/core").SourceSnapshot> = {};
+
+		// 1. Handle creations
+		for (const source of request.createdSources) {
+			try {
+				const calendarId = getCalendarId(source.snapshot);
+				if (!calendarId) throw new Error("No calendar selected");
+
+				const eventData: GoogleCalendarEvent = {
+					summary: source.snapshot.title,
+					description: source.snapshot.bodyMd,
+					location: (source.snapshot.metadata.calendarLocation as string) || null,
+					start: toEventDateTime(source.snapshot.metadata.calendarStartAt, source.snapshot.metadata.calendarAllDay),
+					end: toEventDateTime(source.snapshot.metadata.calendarEndAt, source.snapshot.metadata.calendarAllDay),
+				};
+
+				const createdEvent = await this.adapter.createEvent(credentials, calendarId, eventData);
+				if (!createdEvent.id) throw new Error("API did not return an event ID");
+
+				const calendarSummary = calendarMap.get(calendarId)!;
+				const mappedSnapshot = toSourceSnapshot(request.integration.id, calendarSummary, createdEvent);
+
+				createdSourceMappings[source.sourceId] = mappedSnapshot;
+				pushedIds.push(source.sourceId);
+			} catch (err) {
+				request.io.error(`Failed to create event ${source.snapshot.title}: ${err instanceof Error ? err.message : String(err)}`);
+				failedIds.push(source.sourceId);
+			}
+		}
+
+		// 2. Handle updates
+		for (const source of request.updatedSources) {
+			try {
+				const calendarId = getCalendarId(source.snapshot);
+				if (!calendarId) throw new Error("No calendar selected");
+				const eventIdParts = source.sourceId.split(":");
+				const eventId = eventIdParts.length > 1 ? eventIdParts[1] : source.snapshot.metadata.calendarEventId as string;
+				if (!eventId) throw new Error("No event ID found");
+
+				// Conflict Resolution check
+				const priorRecord = await request.state.getSourceRecord(request.integration.id, source.sourceId);
+				let bodyMd = source.snapshot.bodyMd;
+
+				if (priorRecord && priorRecord.sourceUpdatedAt) {
+					// We need to fetch the remote event to see if it was modified since we last pulled it
+					try {
+						const remoteEvent = await this.adapter.getEvent(credentials, calendarId, eventId);
+						if (remoteEvent && remoteEvent.updated && new Date(remoteEvent.updated) > new Date(priorRecord.sourceUpdatedAt)) {
+							// Remote was updated more recently than the version we based our local edits on.
+							// Last local write wins, but we append the remote changes.
+							bodyMd += `\n\n---\n**Conflict Note (${new Date().toISOString()})**\nOverwritten remote description:\n${remoteEvent.description ?? "(no description)"}`;
+						}
+					} catch (e) {
+						// Skip conflict check if we fail to fetch the event (e.g. it was deleted)
+					}
+				}
+
+				const eventData: GoogleCalendarEvent = {
+					summary: source.snapshot.title,
+					description: bodyMd,
+					location: (source.snapshot.metadata.calendarLocation as string) || null,
+					start: toEventDateTime(source.snapshot.metadata.calendarStartAt, source.snapshot.metadata.calendarAllDay),
+					end: toEventDateTime(source.snapshot.metadata.calendarEndAt, source.snapshot.metadata.calendarAllDay),
+				};
+
+				await this.adapter.updateEvent(credentials, calendarId, eventId, eventData);
+				pushedIds.push(source.sourceId);
+			} catch (err) {
+				request.io.error(`Failed to update event ${source.sourceId}: ${err instanceof Error ? err.message : String(err)}`);
+				failedIds.push(source.sourceId);
+			}
+		}
+
+		// 3. Handle deletions
+		for (const sourceId of request.deletedSourceIds) {
+			try {
+				const eventIdParts = sourceId.split(":");
+				if (eventIdParts.length !== 2) throw new Error("Invalid sourceId format");
+				const calendarId = eventIdParts[0];
+				const eventId = eventIdParts[1];
+
+				await this.adapter.deleteEvent(credentials, calendarId, eventId);
+				pushedIds.push(sourceId);
+			} catch (err) {
+				request.io.error(`Failed to delete event ${sourceId}: ${err instanceof Error ? err.message : String(err)}`);
+				failedIds.push(sourceId);
+			}
+		}
+
+		return {
+			success: failedIds.length === 0,
+			pushedIds,
+			failedIds,
+			createdSourceMappings,
 		};
 	}
 }

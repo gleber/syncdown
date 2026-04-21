@@ -7,6 +7,9 @@ import type {
 	SinkWriteResult,
 } from "@syncdown/core";
 
+import { compareLocalFsState } from "./parse.js";
+import type { SourceRecord, StoredSourceSnapshot, LocalStateModifications } from "@syncdown/core";
+
 class FileSystemSink implements DocumentSink {
 	async write(request: SinkWriteRequest): Promise<SinkWriteResult> {
 		const absolutePath = path.join(
@@ -38,8 +41,19 @@ class FileSystemSink implements DocumentSink {
 		const absolutePath = path.join(outputDir, relativePath);
 		await rm(absolutePath, { force: true });
 	}
+
+	async analyzeLocalModifications(
+		outputDir: string,
+		integrationId: string,
+		stateRecords: SourceRecord[],
+		stateSnapshots: Map<string, StoredSourceSnapshot>
+	): Promise<LocalStateModifications> {
+		return compareLocalFsState(outputDir, integrationId, stateRecords, stateSnapshots);
+	}
 }
 
 export function createFileSystemSink(): DocumentSink {
 	return new FileSystemSink();
 }
+
+export * from "./parse.js";

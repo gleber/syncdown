@@ -12,6 +12,7 @@
 		"typecheck": "tsgo -p ./tsconfig.json --noEmit --pretty false"
 	},
 	"dependencies": {
-		"@syncdown/core": "workspace:*"
+		"@syncdown/core": "workspace:*",
+		"yaml": "^2.8.3"
 	}
 }
