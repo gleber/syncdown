@@ -80,6 +80,29 @@ test("buildRelativePath routes notion database items under databases folders", (
 	);
 });
 
+test("buildRelativePath truncates long titles to keep filename within 255 chars", () => {
+	const longTitle =
+		"icfp research papers prototyping a functional language using higher order logic programming a functional pearl on learning the ways of prolog makam antonis stampoulis adam chlipala";
+	const longEventId =
+		"_60o66p1o6spjebb375hj6b9k6or38bb1c8q32b9kckqj0opmcgsj4opj6t066rrecon74pbjclgn4or8e8n6usj7";
+	const document = createSnapshot({
+		connectorId: "google-calendar",
+		sourceId: `primary:${longEventId}`,
+		entityType: "event",
+		title: longTitle,
+		pathHint: { kind: "calendar-event", calendarName: "Primary Calendar" },
+		metadata: {
+			createdAt: "2018-09-01T00:00:00.000Z",
+			calendarEventId: longEventId,
+		},
+	});
+
+	const result = buildRelativePath(document);
+	const fileName = result.split("/").at(-1)!;
+	expect(fileName.length).toBeLessThanOrEqual(255);
+	expect(fileName.endsWith(`-${longEventId}.md`)).toBe(true);
+});
+
 test("buildRelativePath routes non-database notion pages under pages folders", () => {
 	const document = createSnapshot({
 		connectorId: "notion",

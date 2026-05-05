@@ -63,8 +63,22 @@ function getFileIdentifier(document: SourceSnapshot): string {
 	return document.sourceId;
 }
 
+const MAX_FILENAME_LENGTH = 255;
+
+function buildFileName(document: SourceSnapshot): string {
+	const identifier = getFileIdentifier(document);
+	const suffix = `-${identifier}.md`;
+	const rawSlug = document.slug || slugifySegment(document.title);
+	const maxSlugLength = MAX_FILENAME_LENGTH - suffix.length;
+	const slug =
+		rawSlug.length > maxSlugLength
+			? rawSlug.slice(0, maxSlugLength).replace(/-+$/, "")
+			: rawSlug;
+	return `${slug}${suffix}`;
+}
+
 export function buildRelativePath(document: SourceSnapshot): string {
-	const fileName = `${document.slug || slugifySegment(document.title)}-${getFileIdentifier(document)}.md`;
+	const fileName = buildFileName(document);
 	if (document.pathHint.kind === "message") {
 		const createdAt = document.metadata.createdAt
 			? new Date(document.metadata.createdAt)
