@@ -1,0 +1,839 @@
+$ turbo run build --filter=docs
+• turbo 2.8.17
+• Packages in scope: docs
+• Running build in 1 packages
+• Remote caching disabled
+docs:build: cache miss, executing f3dabae862162231
+docs:build: $ vite build
+docs:build: vite v8.0.0 building client environment for production...
+docs:build: [MDX] generated files in 5.472557000000052ms
+docs:build: [2Kdocs:build: transforming...✓ 2349 modules transformed.
+docs:build: rendering chunks...
+docs:build: computing gzip size...
+docs:build: .output/public/assets/app-D3RXOhke.css                        75.99 kB │ gzip: 12.55 kB
+docs:build: .output/public/assets/remove-undefined-Bfj4SlGF-C8MrAX4z.js    0.20 kB │ gzip:  0.16 kB
+docs:build: .output/public/assets/_-CW0sfkw7.js                            0.28 kB │ gzip:  0.21 kB
+docs:build: .output/public/assets/_-yWzDcySR.js                            0.28 kB │ gzip:  0.21 kB
+docs:build: .output/public/assets/jsx-runtime-Cns_S3nq.js                  0.42 kB │ gzip:  0.29 kB
+docs:build: .output/public/assets/fetch-DXkxZMpH.js                        0.44 kB │ gzip:  0.29 kB
+docs:build: .output/public/assets/chunk-DECur_0Z.js                        0.68 kB │ gzip:  0.41 kB
+docs:build: .output/public/assets/algolia-CjCJDUuA.js                      0.80 kB │ gzip:  0.51 kB
+docs:build: .output/public/assets/search-Nxnx09iN.js                       0.99 kB │ gzip:  0.52 kB
+docs:build: .output/public/assets/orama-cloud-legacy-Ksxhpjn7.js           1.14 kB │ gzip:  0.60 kB
+docs:build: .output/public/assets/orama-cloud-D4nJEcq4.js                  1.20 kB │ gzip:  0.62 kB
+docs:build: .output/public/assets/index.zh-CN-CgyEjafg.js                  5.67 kB │ gzip:  1.48 kB
+docs:build: .output/public/assets/connectors-DYN75bB4.js                   5.79 kB │ gzip:  1.28 kB
+docs:build: .output/public/assets/index.ko-BqXecK1k.js                     6.24 kB │ gzip:  1.49 kB
+docs:build: .output/public/assets/index.ja-tB6Wdlkr.js                     6.64 kB │ gzip:  1.56 kB
+docs:build: .output/public/assets/apple-notes.zh-CN-DxIacWTe.js            9.44 kB │ gzip:  2.28 kB
+docs:build: .output/public/assets/apple-notes-CTqORp4J.js                  9.54 kB │ gzip:  2.06 kB
+docs:build: .output/public/assets/apple-notes.ko-C-0FTPEy.js              10.42 kB │ gzip:  2.37 kB
+docs:build: .output/public/assets/apple-notes.ja-h3WpaXPE.js              11.19 kB │ gzip:  2.44 kB
+docs:build: .output/public/assets/mixedbread-Bu4uTMum.js                  11.94 kB │ gzip:  5.37 kB
+docs:build: .output/public/assets/storage-ZEP_eJPY.js                     15.96 kB │ gzip:  2.52 kB
+docs:build: .output/public/assets/storage.zh-CN-D_BOrNEk.js               16.16 kB │ gzip:  2.83 kB
+docs:build: .output/public/assets/storage.ko-DEBuddwz.js                  17.50 kB │ gzip:  2.89 kB
+docs:build: .output/public/assets/storage.ja-CXEGMPK9.js                  18.56 kB │ gzip:  2.97 kB
+docs:build: .output/public/assets/sync.zh-CN-Dt3V2jKw.js                  19.87 kB │ gzip:  3.41 kB
+docs:build: .output/public/assets/sync-CRaS77xq.js                        20.14 kB │ gzip:  3.17 kB
+docs:build: .output/public/assets/index.zh-CN-_7fPcmuj.js                 20.31 kB │ gzip:  4.39 kB
+docs:build: .output/public/assets/docs-BiwJ5t_V.js                        20.37 kB │ gzip:  3.93 kB
+docs:build: .output/public/assets/sync.ko-BPXJzWJW.js                     20.97 kB │ gzip:  3.38 kB
+docs:build: .output/public/assets/sync.ja-_Xqa58Mv.js                     21.82 kB │ gzip:  3.43 kB
+docs:build: .output/public/assets/index.ko-HZwHxbj8.js                    21.95 kB │ gzip:  4.42 kB
+docs:build: .output/public/assets/index.ja-BcGFuTdX.js                    23.64 kB │ gzip:  4.53 kB
+docs:build: .output/public/assets/getting-started-DjzLbca-.js             24.66 kB │ gzip:  4.07 kB
+docs:build: .output/public/assets/getting-started.zh-CN-ZnC1Rdrd.js       24.73 kB │ gzip:  4.49 kB
+docs:build: .output/public/assets/google-calendar.zh-CN-CSZFSN-d.js       26.42 kB │ gzip:  4.61 kB
+docs:build: .output/public/assets/getting-started.ko-5V1JWEiG.js          26.60 kB │ gzip:  4.59 kB
+docs:build: .output/public/assets/google-calendar-B576Z3QN.js             26.72 kB │ gzip:  4.22 kB
+docs:build: .output/public/assets/gmail.zh-CN-DkpbRKgW.js                 27.48 kB │ gzip:  4.74 kB
+docs:build: .output/public/assets/gmail-Bg_skjr3.js                       27.81 kB │ gzip:  4.40 kB
+docs:build: .output/public/assets/getting-started.ja-DiDrod6g.js          27.98 kB │ gzip:  4.64 kB
+docs:build: .output/public/assets/google-calendar.ko-DrHb9-D6.js          28.86 kB │ gzip:  4.67 kB
+docs:build: .output/public/assets/notion.zh-CN-B6XCejse.js                29.15 kB │ gzip:  4.71 kB
+docs:build: .output/public/assets/notion-CdRnh3c-.js                      29.37 kB │ gzip:  4.33 kB
+docs:build: .output/public/assets/google-calendar.ja-BBB331u8.js          29.78 kB │ gzip:  4.73 kB
+docs:build: .output/public/assets/gmail.ko-DlsHf8gr.js                    29.84 kB │ gzip:  4.85 kB
+docs:build: .output/public/assets/gmail.ja-C_qEO5KG.js                    30.87 kB │ gzip:  4.93 kB
+docs:build: .output/public/assets/notion.ko-C7xf_FpN.js                   31.81 kB │ gzip:  4.78 kB
+docs:build: .output/public/assets/notion.ja-CO30JIYF.js                   33.06 kB │ gzip:  4.88 kB
+docs:build: .output/public/assets/cli.zh-CN-DkbT0IpI.js                   38.53 kB │ gzip:  4.68 kB
+docs:build: .output/public/assets/cli-G0IYfbjJ.js                         38.69 kB │ gzip:  4.33 kB
+docs:build: .output/public/assets/cli.ko-gcuUd2RF.js                      40.07 kB │ gzip:  4.82 kB
+docs:build: .output/public/assets/cli.ja-Ba4D4OmA.js                      40.90 kB │ gzip:  4.87 kB
+docs:build: .output/public/assets/configuration.zh-CN-CbHOXbsm.js         42.53 kB │ gzip:  4.08 kB
+docs:build: .output/public/assets/configuration-DKiTJp4m.js               42.74 kB │ gzip:  3.86 kB
+docs:build: .output/public/assets/configuration.ko-BTVc7Nv3.js            43.70 kB │ gzip:  4.22 kB
+docs:build: .output/public/assets/configuration.ja-D8yY1iuq.js            45.46 kB │ gzip:  4.33 kB
+docs:build: .output/public/assets/orama-static-DIiuXv1s.js                62.63 kB │ gzip: 21.54 kB
+docs:build: .output/public/assets/dist-CZm6TcZu.js                        73.55 kB │ gzip: 25.19 kB
+docs:build: .output/public/assets/remark-CfaVAyte.js                      89.91 kB │ gzip: 25.75 kB
+docs:build: .output/public/assets/docs-page-CHjNfpYL.js                  195.38 kB │ gzip: 65.24 kB
+docs:build: .output/public/assets/search-default-B5Ce1_z6.js             230.02 kB │ gzip: 71.28 kB
+docs:build: .output/public/assets/main-lsa96had.js                       268.23 kB │ gzip: 84.30 kB
+docs:build:
+docs:build: [33m[PLUGIN_TIMINGS] Warning:[0m Your build spent significant time in plugins. Here is a breakdown:
+docs:build:   - tanstack-start-core:import-protection (59%)
+docs:build:   - fumadocs-mdx (25%)
+docs:build:   - tanstack-start-core:import-protection-transform-cache (15%)
+docs:build: See https://rolldown.rs/options/checks#plugintimings for more details.
+docs:build:
+docs:build: ✓ built in 4.75s
+docs:build: vite v8.0.0 building ssr environment for production...
+docs:build: [MDX] generated files in 1.7405580000004193ms
+docs:build: [2Kdocs:build: transforming...✓ 191 modules transformed.
+docs:build: rendering chunks...
+docs:build: computing gzip size...
+docs:build: node_modules/.nitro/vite/services/ssr/assets/app-D3RXOhke.css                                 75.99 kB │ gzip: 12.55 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli-7xDF3kzd.js                                   0.19 kB │ gzip:  0.14 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/docs-BKXL74O7.js                                  0.19 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync-DgAZzfZk.js                                  0.19 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail-BY6KfVwG.js                                 0.19 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.ja-BVk8_aLp.js                                0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.ko-CLGfoYSj.js                                0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion-BbcRs1KV.js                                0.20 kB │ gzip:  0.14 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage-Cwz2YlSJ.js                               0.20 kB │ gzip:  0.14 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.ja-DJG0O_O4.js                               0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.ko-BDnnWDI2.js                               0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.ja-BZvFM7Op.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.ko-CyVC02Fk.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ja-CVShMQvv.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ja-DMq6bB9L.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ko-DXIlUYd6.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ko-gsys6iNZ.js                              0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.zh-CN-D8VjVJZf.js                             0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.ja-BYAXzuR3.js                             0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.ko-DVLhf-Qz.js                             0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/connectors-rVC40-95.js                            0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.ja-DjQzoNIH.js                            0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.ko-CVm6_eqG.js                            0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.zh-CN-BVnAzULw.js                            0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes-1SPnrMaX.js                           0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.zh-CN-Kn59euUA.js                           0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.zh-CN-1YQGc6gF.js                           0.20 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.zh-CN-BolpFjZ-.js                           0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.zh-CN-CWKUF0z0.js                          0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration-BoY-UPFr.js                         0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.zh-CN-8ZXtZnhU.js                         0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.ja-CiuSNh9r.js                        0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.ko-B08fDn0a.js                        0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started-B29_paNN.js                       0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar-DguBURru.js                       0.20 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.ja-Dk3tSS3O.js                      0.21 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.ko-NRUL_6j9.js                      0.21 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.zh-CN-C_ELIUtu.js                     0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.ja-9_Pt1HWF.js                    0.21 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.ko-CaIgxT_1.js                    0.21 kB │ gzip:  0.15 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.ja-e6Exsf3U.js                    0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.ko-Cfwl0Kqh.js                    0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.zh-CN-D6o3S8Kp.js                   0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.zh-CN-BU8DmAn-.js                 0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.zh-CN-tkBFJmCG.js                 0.21 kB │ gzip:  0.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/chunk-noHr4qNm.js                                 0.36 kB │ gzip:  0.25 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/_-SSbAuj0M.js                                     0.44 kB │ gzip:  0.29 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/_-CMYpuIcU.js                                     0.47 kB │ gzip:  0.30 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/remove-undefined-Bfj4SlGF-BFMFv-FW.js             0.51 kB │ gzip:  0.30 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/_-CRVTlW5I.js                                     0.62 kB │ gzip:  0.37 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/_-BcYm54Al.js                                     0.75 kB │ gzip:  0.43 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/fetch-CUS5CUqt.js                                 0.81 kB │ gzip:  0.45 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DYBOqmfy.js            0.85 kB │ gzip:  0.39 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/__tanstack-start-server-fn-resolver-BEGts0xK.js   0.89 kB │ gzip:  0.45 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/chunk-BoAXSpZd-DRlB1b1v.js                        1.16 kB │ gzip:  0.59 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/docs-page-C7PEx15q.js                             1.33 kB │ gzip:  0.68 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/start-C1akQ_-M.js                                 1.34 kB │ gzip:  0.62 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/algolia-C-iC5f7J.js                               1.47 kB │ gzip:  0.72 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/createStart-CtkyuYW9.js                           1.57 kB │ gzip:  0.55 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/orama-static-BShudm0w.js                          1.58 kB │ gzip:  0.78 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/use-on-change-B-kUURZr.js                         1.73 kB │ gzip:  0.78 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/search-BB8UDnD8.js                                1.90 kB │ gzip:  0.78 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/advanced-BZKQwtss-C3EcSNJ1.js                     2.14 kB │ gzip:  0.91 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/orama-cloud-legacy-B0LVWZBS.js                    2.20 kB │ gzip:  0.85 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/orama-cloud-YYpGPXKz.js                           2.25 kB │ gzip:  0.87 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/utils-6GexS7iX-BTUk2rPI.js                        2.34 kB │ gzip:  1.01 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/i18n-B9uywb5T.js                                  2.98 kB │ gzip:  1.12 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/mixedbread-xfNDdHJ_.js                            4.87 kB │ gzip:  1.89 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/i18n-DQYz5k6b.js                                  5.07 kB │ gzip:  2.17 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.zh-CN-1hAXHP5T.js                           7.28 kB │ gzip:  1.78 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/connectors-C8lhb-Q2.js                            7.48 kB │ gzip:  1.57 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ko-C_XKBnu3.js                              7.85 kB │ gzip:  1.78 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ja-BH8o1lW_.js                              8.25 kB │ gzip:  1.84 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/esm-iXSIQY19.js                                   9.61 kB │ gzip:  2.84 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.zh-CN-D-N5Zx0T.js                    12.33 kB │ gzip:  2.68 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes-DyqxOg2g.js                          12.41 kB │ gzip:  2.44 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.ko-B7WeDv8M.js                       13.30 kB │ gzip:  2.76 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/apple-notes.ja-DURnkUGf.js                       14.08 kB │ gzip:  2.84 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/search-default-B9WRMlfn.js                       18.32 kB │ gzip:  5.42 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage-D3pmDY3j.js                              20.09 kB │ gzip:  2.85 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.zh-CN-DZf6XPSR.js                        20.30 kB │ gzip:  3.18 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.ko-DM8Fxqsw.js                           21.64 kB │ gzip:  3.23 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/storage.ja-UfEDxgra.js                           22.70 kB │ gzip:  3.31 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.zh-CN-DDQk3wOb.js                           25.78 kB │ gzip:  3.86 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync-LJPU6Mui.js                                 26.08 kB │ gzip:  3.59 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.zh-CN-DjOf3zEU.js                          26.18 kB │ gzip:  4.81 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/docs-CxeQfT4Y.js                                 26.22 kB │ gzip:  4.32 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.ko-Baj1Tn6u.js                              26.87 kB │ gzip:  3.84 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/sync.ja-BLixldRE.js                              27.72 kB │ gzip:  3.89 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ko-BLRcnoUc.js                             27.79 kB │ gzip:  4.83 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/index.ja-7edr2tYE.js                             29.49 kB │ gzip:  4.94 kB
+docs:build: node_modules/.nitro/vite/services/ssr/index.js                                                30.19 kB │ gzip:  8.02 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/router-BtQ-H6aS.js                               30.38 kB │ gzip:  8.29 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started-C7SOt_eO.js                      31.08 kB │ gzip:  4.49 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.zh-CN-pD520Skj.js                31.16 kB │ gzip:  4.96 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/source-CR8-nGkj.js                               32.93 kB │ gzip:  9.19 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.ko-Bn-zMKAr.js                   33.00 kB │ gzip:  5.08 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.zh-CN-T6t57COr.js                33.82 kB │ gzip:  5.06 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar-B3QlXPkE.js                      34.08 kB │ gzip:  4.66 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/getting-started.ja-DKelzERv.js                   34.38 kB │ gzip:  5.12 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.zh-CN-BBRK_qYS.js                          35.68 kB │ gzip:  5.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail-C8wqTkRq.js                                35.97 kB │ gzip:  4.77 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.ko-CpDSS4NG.js                   36.17 kB │ gzip:  5.10 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/google-calendar.ja-6kcIw_cG.js                   37.09 kB │ gzip:  5.16 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.ko-Bhza4PiI.js                             38.01 kB │ gzip:  5.24 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.zh-CN-x_ln3E41.js                         38.03 kB │ gzip:  5.14 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion-uenOSiOL.js                               38.24 kB │ gzip:  4.72 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/gmail.ja-cnT2nCO_.js                             39.04 kB │ gzip:  5.34 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.ko-Cen9Xj0Y.js                            40.67 kB │ gzip:  5.19 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/notion.ja-_uEQ24pG.js                            41.92 kB │ gzip:  5.35 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.zh-CN-BeTVKyH2.js                            51.83 kB │ gzip:  5.68 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli-gD-q4afy.js                                  51.98 kB │ gzip:  5.26 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.ko-nKIurbYG.js                               53.36 kB │ gzip:  5.89 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/cli.ja-DlEcVgyv.js                               54.19 kB │ gzip:  6.00 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.zh-CN-CfK2tyyX.js                  61.69 kB │ gzip:  5.23 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration-C4EgtTlj.js                        61.88 kB │ gzip:  4.91 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.ko-iBn2vWcI.js                     62.85 kB │ gzip:  5.32 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/configuration.ja-5mJhFabU.js                     64.61 kB │ gzip:  5.50 kB
+docs:build: node_modules/.nitro/vite/services/ssr/assets/docs-page-CZACLip4.js                            99.17 kB │ gzip: 25.72 kB
+docs:build:
+docs:build: ✓ built in 2.24s
+docs:build:
+docs:build: [nitro] ◐ Building [Nitro] (preset: cloudflare-module, compatibility: 2026-03-17)
+docs:build: [nitro] ✔ Generated public .output/public
+docs:build: vite v8.0.0 building nitro environment for production...
+docs:build:
+docs:build:  WARN  inlineDynamicImports option is ignored because the codeSplitting option is specified.
+docs:build:
+docs:build: [MDX] generated files in 6.375235999999859ms
+docs:build: [2Kdocs:build: transforming...✓ 2379 modules transformed.
+docs:build: rendering chunks...
+docs:build: computing gzip size...
+docs:build: .output/server/_libs/devlop.mjs                                    0.10 kB │ gzip:   0.10 kB
+docs:build: .output/server/_libs/_.mjs                                         0.12 kB │ gzip:   0.12 kB
+docs:build: .output/server/_libs/radix-ui__number.mjs                          0.18 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/cli-7xDF3kzd.mjs                               0.19 kB │ gzip:   0.14 kB
+docs:build: .output/server/_ssr/docs-BKXL74O7.mjs                              0.19 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/sync-DgAZzfZk.mjs                              0.19 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/gmail-BY6KfVwG.mjs                             0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/cli.ja-BVk8_aLp.mjs                            0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/cli.ko-CLGfoYSj.mjs                            0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/notion-BbcRs1KV.mjs                            0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/storage-Cwz2YlSJ.mjs                           0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/sync.ja-DJG0O_O4.mjs                           0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/sync.ko-BDnnWDI2.mjs                           0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/gmail.ja-BZvFM7Op.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/gmail.ko-CyVC02Fk.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/index.ja-CVShMQvv.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/index.ja-DMq6bB9L.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/index.ko-DXIlUYd6.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/index.ko-gsys6iNZ.mjs                          0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/cli.zh-CN-D8VjVJZf.mjs                         0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/notion.ja-BYAXzuR3.mjs                         0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/notion.ko-DVLhf-Qz.mjs                         0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/connectors-rVC40-95.mjs                        0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/storage.ja-DjQzoNIH.mjs                        0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/storage.ko-CVm6_eqG.mjs                        0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/sync.zh-CN-BVnAzULw.mjs                        0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/apple-notes-1SPnrMaX.mjs                       0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/gmail.zh-CN-Kn59euUA.mjs                       0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/index.zh-CN-1YQGc6gF.mjs                       0.20 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/index.zh-CN-BolpFjZ-.mjs                       0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/notion.zh-CN-CWKUF0z0.mjs                      0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/configuration-BoY-UPFr.mjs                     0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/storage.zh-CN-8ZXtZnhU.mjs                     0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/apple-notes.ja-CiuSNh9r.mjs                    0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/apple-notes.ko-B08fDn0a.mjs                    0.20 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/getting-started-B29_paNN.mjs                   0.21 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/google-calendar-DguBURru.mjs                   0.21 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/configuration.ja-Dk3tSS3O.mjs                  0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/configuration.ko-NRUL_6j9.mjs                  0.21 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/apple-notes.zh-CN-C_ELIUtu.mjs                 0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/getting-started.ja-9_Pt1HWF.mjs                0.21 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/getting-started.ko-CaIgxT_1.mjs                0.21 kB │ gzip:   0.15 kB
+docs:build: .output/server/_ssr/google-calendar.ja-e6Exsf3U.mjs                0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/google-calendar.ko-Cfwl0Kqh.mjs                0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/configuration.zh-CN-D6o3S8Kp.mjs               0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/getting-started.zh-CN-BU8DmAn-.mjs             0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_ssr/google-calendar.zh-CN-tkBFJmCG.mjs             0.21 kB │ gzip:   0.16 kB
+docs:build: .output/server/_libs/bail.mjs                                      0.26 kB │ gzip:   0.20 kB
+docs:build: .output/server/_ssr/chunk-noHr4qNm.mjs                             0.40 kB │ gzip:   0.28 kB
+docs:build: .output/server/_libs/is-plain-obj.mjs                              0.41 kB │ gzip:   0.24 kB
+docs:build: .output/server/_libs/radix-ui__primitive.mjs                       0.42 kB │ gzip:   0.23 kB
+docs:build: .output/server/_ssr/remove-undefined-Bfj4SlGF-BFMFv-FW.mjs         0.53 kB │ gzip:   0.31 kB
+docs:build: .output/server/_-SSbAuj0M.mjs                                      0.60 kB │ gzip:   0.34 kB
+docs:build: .output/server/_chunks/ssr-renderer.mjs                            0.61 kB │ gzip:   0.36 kB
+docs:build: .output/server/_-CMYpuIcU.mjs                                      0.63 kB │ gzip:   0.34 kB
+docs:build: .output/server/_libs/estree-util-is-identifier-name.mjs            0.66 kB │ gzip:   0.39 kB
+docs:build: .output/server/_-CRVTlW5I.mjs                                      0.69 kB │ gzip:   0.43 kB
+docs:build: .output/server/_libs/decode-named-character-reference+[...].mjs    0.71 kB │ gzip:   0.44 kB
+docs:build: .output/server/_libs/mdast-util-phrasing.mjs                       0.76 kB │ gzip:   0.45 kB
+docs:build: .output/server/_libs/rehype-raw.mjs                                0.77 kB │ gzip:   0.42 kB
+docs:build: .output/server/_ssr/fetch-CUS5CUqt.mjs                             0.81 kB │ gzip:   0.46 kB
+docs:build: .output/server/_-BcYm54Al.mjs                                      0.82 kB │ gzip:   0.48 kB
+docs:build: .output/server/_libs/longest-streak.mjs                            0.84 kB │ gzip:   0.44 kB
+docs:build: .output/server/_libs/radix-ui__react-direction.mjs                 0.85 kB │ gzip:   0.40 kB
+docs:build: .output/server/_tanstack-start-manifest_v-DYBOqmfy.mjs             0.90 kB │ gzip:   0.43 kB
+docs:build: .output/server/__tanstack-start-server-fn-resolver-BEGts0xK.mjs    0.95 kB │ gzip:   0.49 kB
+docs:build: .output/server/_libs/hookable.mjs                                  1.13 kB │ gzip:   0.51 kB
+docs:build: .output/server/_ssr/docs-page-C7PEx15q.mjs                         1.22 kB │ gzip:   0.65 kB
+docs:build: .output/server/_libs/scroll-into-view-if-needed.mjs                1.22 kB │ gzip:   0.61 kB
+docs:build: .output/server/_runtime.mjs                                        1.39 kB │ gzip:   0.66 kB
+docs:build: .output/server/_ssr/algolia-C-iC5f7J.mjs                           1.47 kB │ gzip:   0.73 kB
+docs:build: .output/server/_libs/comma-separated-tokens.mjs                    1.52 kB │ gzip:   0.67 kB
+docs:build: .output/server/_ssr/orama-static-BShudm0w.mjs                      1.58 kB │ gzip:   0.79 kB
+docs:build: .output/server/_ssr/use-on-change-B-kUURZr.mjs                     1.80 kB │ gzip:   0.84 kB
+docs:build: .output/server/_ssr/search-BB8UDnD8.mjs                            1.96 kB │ gzip:   0.81 kB
+docs:build: .output/server/_ssr/advanced-BZKQwtss-C3EcSNJ1.mjs                 2.18 kB │ gzip:   0.94 kB
+docs:build: .output/server/_ssr/orama-cloud-legacy-B0LVWZBS.mjs                2.20 kB │ gzip:   0.87 kB
+docs:build: .output/server/_ssr/orama-cloud-YYpGPXKz.mjs                       2.25 kB │ gzip:   0.88 kB
+docs:build: .output/server/_ssr/utils-6GexS7iX-BTUk2rPI.mjs                    2.27 kB │ gzip:   1.00 kB
+docs:build: .output/server/_libs/extend.mjs                                    2.61 kB │ gzip:   0.97 kB
+docs:build: .output/server/_ssr/start-C1akQ_-M.mjs                             2.72 kB │ gzip:   1.03 kB
+docs:build: .output/server/_libs/class-variance-authority+clsx.mjs             3.17 kB │ gzip:   1.24 kB
+docs:build: .output/server/_ssr/i18n-B9uywb5T.mjs                              3.47 kB │ gzip:   1.22 kB
+docs:build: .output/server/_libs/compute-scroll-into-view.mjs                  4.06 kB │ gzip:   1.65 kB
+docs:build: .output/server/_libs/next-themes.mjs                               4.60 kB │ gzip:   1.88 kB
+docs:build: .output/server/_libs/remark-rehype.mjs                             4.93 kB │ gzip:   2.01 kB
+docs:build: .output/server/_libs/fumadocs-mdx.mjs                              4.97 kB │ gzip:   1.62 kB
+docs:build: .output/server/_ssr/i18n-DQYz5k6b.mjs                              5.00 kB │ gzip:   2.17 kB
+docs:build: .output/server/_libs/radix-ui__react-tabs.mjs                      5.68 kB │ gzip:   1.64 kB
+docs:build: .output/server/_ssr/mixedbread-xfNDdHJ_.mjs                        5.94 kB │ gzip:   2.33 kB
+docs:build: .output/server/_libs/ungap__structured-clone.mjs                   6.32 kB │ gzip:   1.90 kB
+docs:build: .output/server/_libs/@radix-ui/react-collection+[...].mjs          6.73 kB │ gzip:   1.87 kB
+docs:build: .output/server/_libs/@radix-ui/react-arrow+[...].mjs               7.54 kB │ gzip:   2.39 kB
+docs:build: .output/server/_ssr/index.zh-CN-1hAXHP5T.mjs                       8.39 kB │ gzip:   1.89 kB
+docs:build: .output/server/_libs/radix-ui__react-roving-focus.mjs              8.58 kB │ gzip:   2.44 kB
+docs:build: .output/server/_ssr/connectors-C8lhb-Q2.mjs                        8.58 kB │ gzip:   1.67 kB
+docs:build: .output/server/_ssr/index.ko-C_XKBnu3.mjs                          8.96 kB │ gzip:   1.89 kB
+docs:build: .output/server/_ssr/esm-iXSIQY19.mjs                               8.99 kB │ gzip:   2.81 kB
+docs:build: .output/server/_libs/h3-v2.mjs                                     9.07 kB │ gzip:   2.86 kB
+docs:build: .output/server/_ssr/index.ja-BH8o1lW_.mjs                          9.35 kB │ gzip:   1.96 kB
+docs:build: .output/server/_libs/github-slugger.mjs                            9.99 kB │ gzip:   4.23 kB
+docs:build: .output/server/_libs/tanstack__history.mjs                        10.70 kB │ gzip:   2.80 kB
+docs:build: .output/server/_libs/h3+rou3+srvx.mjs                             13.60 kB │ gzip:   4.08 kB
+docs:build: .output/server/_ssr/apple-notes.zh-CN-D-N5Zx0T.mjs                14.17 kB │ gzip:   2.80 kB
+docs:build: .output/server/_ssr/apple-notes-DyqxOg2g.mjs                      14.25 kB │ gzip:   2.55 kB
+docs:build: .output/server/_libs/@radix-ui/react-collapsible+[...].mjs        15.06 kB │ gzip:   3.88 kB
+docs:build: .output/server/_ssr/apple-notes.ko-B7WeDv8M.mjs                   15.14 kB │ gzip:   2.87 kB
+docs:build: .output/server/_ssr/apple-notes.ja-DURnkUGf.mjs                   15.92 kB │ gzip:   2.96 kB
+docs:build: .output/server/_ssr/search-default-B9WRMlfn.mjs                   20.44 kB │ gzip:   5.54 kB
+docs:build: .output/server/_ssr/storage-D3pmDY3j.mjs                          23.33 kB │ gzip:   2.98 kB
+docs:build: .output/server/index.mjs                                          23.54 kB │ gzip:   6.09 kB
+docs:build: .output/server/_ssr/storage.zh-CN-DZf6XPSR.mjs                    23.54 kB │ gzip:   3.31 kB
+docs:build: .output/server/_libs/@radix-ui/react-popover+[...].mjs            24.02 kB │ gzip:   5.85 kB
+docs:build: .output/server/_ssr/storage.ko-DM8Fxqsw.mjs                       24.87 kB │ gzip:   3.36 kB
+docs:build: .output/server/_libs/@floating-ui/dom+[...].mjs                   25.87 kB │ gzip:   6.56 kB
+docs:build: .output/server/_libs/@floating-ui/core+[...].mjs                  25.91 kB │ gzip:   6.36 kB
+docs:build: .output/server/_ssr/storage.ja-UfEDxgra.mjs                       25.93 kB │ gzip:   3.44 kB
+docs:build: .output/server/_libs/radix-ui__react-scroll-area.mjs              26.96 kB │ gzip:   5.26 kB
+docs:build: .output/server/_ssr/ssr.mjs                                       29.31 kB │ gzip:   7.98 kB
+docs:build: .output/server/_ssr/sync.zh-CN-DDQk3wOb.mjs                       29.84 kB │ gzip:   3.99 kB
+docs:build: .output/server/_ssr/index.zh-CN-DjOf3zEU.mjs                      29.92 kB │ gzip:   4.95 kB
+docs:build: .output/server/_ssr/docs-CxeQfT4Y.mjs                             29.96 kB │ gzip:   4.46 kB
+docs:build: .output/server/_ssr/sync-LJPU6Mui.mjs                             30.17 kB │ gzip:   3.72 kB
+docs:build: .output/server/_ssr/sync.ko-Baj1Tn6u.mjs                          30.93 kB │ gzip:   3.97 kB
+docs:build: .output/server/_libs/@radix-ui/react-navigation-menu+[...].mjs    31.14 kB │ gzip:   6.58 kB
+docs:build: .output/server/_libs/@floating-ui/react-dom+[...].mjs             31.25 kB │ gzip:   7.97 kB
+docs:build: .output/server/_ssr/index.ko-BLRcnoUc.mjs                         31.53 kB │ gzip:   4.98 kB
+docs:build: .output/server/_ssr/sync.ja-BLixldRE.mjs                          31.78 kB │ gzip:   4.01 kB
+docs:build: .output/server/_ssr/router-BtQ-H6aS.mjs                           31.89 kB │ gzip:   8.29 kB
+docs:build: .output/server/_ssr/source-CR8-nGkj.mjs                           32.84 kB │ gzip:   9.22 kB
+docs:build: .output/server/_ssr/index.ja-7edr2tYE.mjs                         33.23 kB │ gzip:   5.09 kB
+docs:build: .output/server/_libs/hast-util-to-jsx-runtime+[...].mjs           34.46 kB │ gzip:   9.13 kB
+docs:build: .output/server/_libs/character-entities.mjs                       35.31 kB │ gzip:  12.27 kB
+docs:build: .output/server/_ssr/getting-started-C7SOt_eO.mjs                  35.74 kB │ gzip:   4.64 kB
+docs:build: .output/server/_ssr/getting-started.zh-CN-pD520Skj.mjs            35.83 kB │ gzip:   5.13 kB
+docs:build: .output/server/_ssr/getting-started.ko-Bn-zMKAr.mjs               37.66 kB │ gzip:   5.22 kB
+docs:build: .output/server/_ssr/google-calendar.zh-CN-T6t57COr.mjs            38.43 kB │ gzip:   5.21 kB
+docs:build: .output/server/_ssr/google-calendar-B3QlXPkE.mjs                  38.70 kB │ gzip:   4.80 kB
+docs:build: .output/server/_ssr/getting-started.ja-DKelzERv.mjs               39.04 kB │ gzip:   5.27 kB
+docs:build: .output/server/_ssr/google-calendar.ko-CpDSS4NG.mjs               40.73 kB │ gzip:   5.25 kB
+docs:build: .output/server/_ssr/gmail.zh-CN-BBRK_qYS.mjs                      40.95 kB │ gzip:   5.31 kB
+docs:build: .output/server/_libs/entities.mjs                                 41.00 kB │ gzip:  22.50 kB
+docs:build: .output/server/_ssr/gmail-C8wqTkRq.mjs                            41.25 kB │ gzip:   4.92 kB
+docs:build: .output/server/_ssr/google-calendar.ja-6kcIw_cG.mjs               41.66 kB │ gzip:   5.31 kB
+docs:build: .output/server/_ssr/gmail.ko-Bhza4PiI.mjs                         43.27 kB │ gzip:   5.39 kB
+docs:build: .output/server/_ssr/notion.zh-CN-x_ln3E41.mjs                     43.32 kB │ gzip:   5.30 kB
+docs:build: .output/server/_ssr/notion-uenOSiOL.mjs                           43.55 kB │ gzip:   4.87 kB
+docs:build: .output/server/_ssr/gmail.ja-cnT2nCO_.mjs                         44.30 kB │ gzip:   5.47 kB
+docs:build: .output/server/_ssr/notion.ko-Cen9Xj0Y.mjs                        45.94 kB │ gzip:   5.34 kB
+docs:build: .output/server/_ssr/notion.ja-_uEQ24pG.mjs                        47.19 kB │ gzip:   5.50 kB
+docs:build: .output/server/_libs/mdast-util-to-hast+[...].mjs                 48.93 kB │ gzip:  10.16 kB
+docs:build: .output/server/_libs/hast-util-from-parse5+[...].mjs              52.71 kB │ gzip:  13.81 kB
+docs:build: .output/server/_libs/mdast-util-to-markdown.mjs                   54.06 kB │ gzip:  10.27 kB
+docs:build: .output/server/_libs/tailwind-merge.mjs                           55.87 kB │ gzip:  12.00 kB
+docs:build: .output/server/_ssr/cli.zh-CN-BeTVKyH2.mjs                        60.11 kB │ gzip:   5.95 kB
+docs:build: .output/server/_ssr/cli-gD-q4afy.mjs                              60.26 kB │ gzip:   5.54 kB
+docs:build: .output/server/_ssr/cli.ko-nKIurbYG.mjs                           61.65 kB │ gzip:   6.16 kB
+docs:build: .output/server/_ssr/cli.ja-DlEcVgyv.mjs                           62.47 kB │ gzip:   6.29 kB
+docs:build: .output/server/_libs/@radix-ui/react-dialog+[...].mjs             62.68 kB │ gzip:  15.17 kB
+docs:build: .output/server/_libs/remark+[...].mjs                             64.90 kB │ gzip:  14.78 kB
+docs:build: .output/server/_ssr/configuration.zh-CN-CfK2tyyX.mjs              71.31 kB │ gzip:   5.36 kB
+docs:build: .output/server/_ssr/configuration-C4EgtTlj.mjs                    71.50 kB │ gzip:   5.02 kB
+docs:build: .output/server/_ssr/configuration.ko-iBn2vWcI.mjs                 72.48 kB │ gzip:   5.48 kB
+docs:build: .output/server/_ssr/configuration.ja-5mJhFabU.mjs                 74.23 kB │ gzip:   5.66 kB
+docs:build: .output/server/_libs/@tanstack/router-core+[...].mjs              79.41 kB │ gzip:  18.82 kB
+docs:build: .output/server/_ssr/docs-page-CZACLip4.mjs                       106.50 kB │ gzip:  25.88 kB
+docs:build: .output/server/_libs/orama__orama+unenv.mjs                      137.53 kB │ gzip:  32.16 kB
+docs:build: .output/server/_libs/mdast-util-from-markdown+[...].mjs          191.61 kB │ gzip:  36.45 kB
+docs:build: .output/server/_libs/hast-util-raw+[...].mjs                     245.85 kB │ gzip:  43.65 kB
+docs:build: .output/server/_libs/@tanstack/react-router+[...].mjs            615.63 kB │ gzip: 125.53 kB
+docs:build: .output/server/_libs/lucide-react.mjs                            661.96 kB │ gzip: 138.54 kB
+docs:build:
+docs:build: ✓ built in 1.53s
+docs:build: ℹ Generated .output/server/wrangler.json
+docs:build: ℹ Generated .wrangler/deploy/config.json
+docs:build: ℹ Generated .output/public/_headers
+docs:build: ℹ Generated .output/nitro.json
+docs:build:
+docs:build: [nitro] ✔ You can preview this build using npx vite preview
+docs:build: [nitro] ✔ You can deploy this build using npx nitro deploy --prebuilt
+docs:build: [prerender] Prerendering pages...
+docs:build:
+docs:build:  ╭────────── [Build Info] ─────────────╮
+docs:build:  │                                     │
+docs:build:  │  - Build Directory: .output         │
+docs:build:  │  - Date: 4/21/2026, 10:16:41 PM     │
+docs:build:  │  - Nitro Version: 3.0.260311-beta   │
+docs:build:  │  - Nitro Preset: cloudflare-module  │
+docs:build:  │                                     │
+docs:build:  ╰─────────────────────────────────────╯
+docs:build:
+docs:build: ℹ Spawning preview server...
+docs:build: ℹ npx wrangler --cwd ./ dev
+docs:build:
+docs:build:
+docs:build:  ⛅️ wrangler 4.74.0 (update available 4.84.1)
+docs:build: ─────────────────────────────────────────────
+docs:build: Using redirected Wrangler configuration.
+docs:build:  - Configuration being used: ".output/server/wrangler.json"
+docs:build:  - Original user's configuration: "<no user config found>"
+docs:build:  - Deploy configuration file: ".wrangler/deploy/config.json"
+docs:build: Your Worker has access to the following bindings:
+docs:build: Binding            Resource      Mode
+docs:build: env.ASSETS         Assets        local
+docs:build:
+docs:build: Attaching additional modules:
+docs:build: ┌──────────────────────────────────────────────────┬──────┬─────────────┐
+docs:build: │ Name                                             │ Type │ Size        │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _-BcYm54Al.mjs                                   │ esm  │ 0.81 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _-CMYpuIcU.mjs                                   │ esm  │ 0.62 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _-CRVTlW5I.mjs                                   │ esm  │ 0.68 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _-SSbAuj0M.mjs                                   │ esm  │ 0.59 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ __tanstack-start-server-fn-resolver-BEGts0xK.mjs │ esm  │ 0.93 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _chunks/ssr-renderer.mjs                         │ esm  │ 0.60 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@floating-ui/core+[...].mjs                │ esm  │ 25.31 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@floating-ui/dom+[...].mjs                 │ esm  │ 25.26 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@floating-ui/react-dom+[...].mjs           │ esm  │ 30.52 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-arrow+[...].mjs            │ esm  │ 7.37 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-collapsible+[...].mjs      │ esm  │ 14.71 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-collection+[...].mjs       │ esm  │ 6.58 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-dialog+[...].mjs           │ esm  │ 61.21 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-navigation-menu+[...].mjs  │ esm  │ 30.42 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@radix-ui/react-popover+[...].mjs          │ esm  │ 23.46 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@tanstack/react-router+[...].mjs           │ esm  │ 601.21 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/@tanstack/router-core+[...].mjs            │ esm  │ 77.55 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/_.mjs                                      │ esm  │ 0.13 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/bail.mjs                                   │ esm  │ 0.26 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/character-entities.mjs                     │ esm  │ 34.49 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/class-variance-authority+clsx.mjs          │ esm  │ 3.10 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/comma-separated-tokens.mjs                 │ esm  │ 1.49 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/compute-scroll-into-view.mjs               │ esm  │ 3.97 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/decode-named-character-reference+[...].mjs │ esm  │ 0.70 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/devlop.mjs                                 │ esm  │ 0.10 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/entities.mjs                               │ esm  │ 40.04 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/estree-util-is-identifier-name.mjs         │ esm  │ 0.65 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/extend.mjs                                 │ esm  │ 2.55 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/fumadocs-mdx.mjs                           │ esm  │ 4.86 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/github-slugger.mjs                         │ esm  │ 9.76 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/h3+rou3+srvx.mjs                           │ esm  │ 13.28 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/h3-v2.mjs                                  │ esm  │ 8.86 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/hast-util-from-parse5+[...].mjs            │ esm  │ 51.48 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/hast-util-raw+[...].mjs                    │ esm  │ 240.09 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/hast-util-to-jsx-runtime+[...].mjs         │ esm  │ 33.65 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/hookable.mjs                               │ esm  │ 1.11 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/is-plain-obj.mjs                           │ esm  │ 0.41 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/longest-streak.mjs                         │ esm  │ 0.83 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/lucide-react.mjs                           │ esm  │ 646.45 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/mdast-util-from-markdown+[...].mjs         │ esm  │ 187.12 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/mdast-util-phrasing.mjs                    │ esm  │ 0.75 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/mdast-util-to-hast+[...].mjs               │ esm  │ 47.79 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/mdast-util-to-markdown.mjs                 │ esm  │ 52.80 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/next-themes.mjs                            │ esm  │ 4.49 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/orama__orama+unenv.mjs                     │ esm  │ 134.31 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__number.mjs                       │ esm  │ 0.18 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__primitive.mjs                    │ esm  │ 0.42 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__react-direction.mjs              │ esm  │ 0.84 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__react-roving-focus.mjs           │ esm  │ 8.39 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__react-scroll-area.mjs            │ esm  │ 26.34 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/radix-ui__react-tabs.mjs                   │ esm  │ 5.55 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/rehype-raw.mjs                             │ esm  │ 0.75 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/remark+[...].mjs                           │ esm  │ 63.38 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/remark-rehype.mjs                          │ esm  │ 4.82 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/scroll-into-view-if-needed.mjs             │ esm  │ 1.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/tailwind-merge.mjs                         │ esm  │ 54.56 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/tanstack__history.mjs                      │ esm  │ 10.45 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _libs/ungap__structured-clone.mjs                │ esm  │ 6.18 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _runtime.mjs                                     │ esm  │ 1.36 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/advanced-BZKQwtss-C3EcSNJ1.mjs              │ esm  │ 2.14 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/algolia-C-iC5f7J.mjs                        │ esm  │ 1.44 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes-1SPnrMaX.mjs                    │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes-DyqxOg2g.mjs                    │ esm  │ 13.92 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.ja-CiuSNh9r.mjs                 │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.ja-DURnkUGf.mjs                 │ esm  │ 15.55 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.ko-B08fDn0a.mjs                 │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.ko-B7WeDv8M.mjs                 │ esm  │ 14.79 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.zh-CN-C_ELIUtu.mjs              │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/apple-notes.zh-CN-D-N5Zx0T.mjs              │ esm  │ 13.85 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/chunk-noHr4qNm.mjs                          │ esm  │ 0.39 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli-7xDF3kzd.mjs                            │ esm  │ 0.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli-gD-q4afy.mjs                            │ esm  │ 58.85 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.ja-BVk8_aLp.mjs                         │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.ja-DlEcVgyv.mjs                         │ esm  │ 61.01 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.ko-CLGfoYSj.mjs                         │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.ko-nKIurbYG.mjs                         │ esm  │ 60.21 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.zh-CN-BeTVKyH2.mjs                      │ esm  │ 58.71 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/cli.zh-CN-D8VjVJZf.mjs                      │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration-BoY-UPFr.mjs                  │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration-C4EgtTlj.mjs                  │ esm  │ 69.83 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.ja-5mJhFabU.mjs               │ esm  │ 72.50 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.ja-Dk3tSS3O.mjs               │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.ko-NRUL_6j9.mjs               │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.ko-iBn2vWcI.mjs               │ esm  │ 70.78 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.zh-CN-CfK2tyyX.mjs            │ esm  │ 69.65 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/configuration.zh-CN-D6o3S8Kp.mjs            │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/connectors-C8lhb-Q2.mjs                     │ esm  │ 8.39 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/connectors-rVC40-95.mjs                     │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/docs-BKXL74O7.mjs                           │ esm  │ 0.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/docs-CxeQfT4Y.mjs                           │ esm  │ 29.26 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/docs-page-C7PEx15q.mjs                      │ esm  │ 1.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/docs-page-CZACLip4.mjs                      │ esm  │ 104.01 KiB  │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/esm-iXSIQY19.mjs                            │ esm  │ 8.78 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/fetch-CUS5CUqt.mjs                          │ esm  │ 0.80 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started-B29_paNN.mjs                │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started-C7SOt_eO.mjs                │ esm  │ 34.91 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.ja-9_Pt1HWF.mjs             │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.ja-DKelzERv.mjs             │ esm  │ 38.13 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.ko-Bn-zMKAr.mjs             │ esm  │ 36.79 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.ko-CaIgxT_1.mjs             │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.zh-CN-BU8DmAn-.mjs          │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/getting-started.zh-CN-pD520Skj.mjs          │ esm  │ 34.99 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail-BY6KfVwG.mjs                          │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail-C8wqTkRq.mjs                          │ esm  │ 40.29 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.ja-BZvFM7Op.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.ja-cnT2nCO_.mjs                       │ esm  │ 43.26 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.ko-Bhza4PiI.mjs                       │ esm  │ 42.26 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.ko-CyVC02Fk.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.zh-CN-BBRK_qYS.mjs                    │ esm  │ 40.00 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/gmail.zh-CN-Kn59euUA.mjs                    │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar-B3QlXPkE.mjs                │ esm  │ 37.79 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar-DguBURru.mjs                │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.ja-6kcIw_cG.mjs             │ esm  │ 40.68 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.ja-e6Exsf3U.mjs             │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.ko-Cfwl0Kqh.mjs             │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.ko-CpDSS4NG.mjs             │ esm  │ 39.78 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.zh-CN-T6t57COr.mjs          │ esm  │ 37.54 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/google-calendar.zh-CN-tkBFJmCG.mjs          │ esm  │ 0.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/i18n-B9uywb5T.mjs                           │ esm  │ 3.39 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/i18n-DQYz5k6b.mjs                           │ esm  │ 4.89 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ja-7edr2tYE.mjs                       │ esm  │ 32.45 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ja-BH8o1lW_.mjs                       │ esm  │ 9.14 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ja-CVShMQvv.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ja-DMq6bB9L.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ko-BLRcnoUc.mjs                       │ esm  │ 30.80 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ko-C_XKBnu3.mjs                       │ esm  │ 8.75 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ko-DXIlUYd6.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.ko-gsys6iNZ.mjs                       │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.zh-CN-1YQGc6gF.mjs                    │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.zh-CN-1hAXHP5T.mjs                    │ esm  │ 8.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.zh-CN-BolpFjZ-.mjs                    │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/index.zh-CN-DjOf3zEU.mjs                    │ esm  │ 29.22 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/mixedbread-xfNDdHJ_.mjs                     │ esm  │ 5.81 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion-BbcRs1KV.mjs                         │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion-uenOSiOL.mjs                         │ esm  │ 42.54 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.ja-BYAXzuR3.mjs                      │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.ja-_uEQ24pG.mjs                      │ esm  │ 46.08 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.ko-Cen9Xj0Y.mjs                      │ esm  │ 44.87 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.ko-DVLhf-Qz.mjs                      │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.zh-CN-CWKUF0z0.mjs                   │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/notion.zh-CN-x_ln3E41.mjs                   │ esm  │ 42.31 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/orama-cloud-YYpGPXKz.mjs                    │ esm  │ 2.21 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/orama-cloud-legacy-B0LVWZBS.mjs             │ esm  │ 2.15 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/orama-static-BShudm0w.mjs                   │ esm  │ 1.55 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/remove-undefined-Bfj4SlGF-BFMFv-FW.mjs      │ esm  │ 0.52 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/router-BtQ-H6aS.mjs                         │ esm  │ 31.15 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/search-BB8UDnD8.mjs                         │ esm  │ 1.92 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/search-default-B9WRMlfn.mjs                 │ esm  │ 19.96 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/source-CR8-nGkj.mjs                         │ esm  │ 32.08 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/ssr.mjs                                     │ esm  │ 28.62 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/start-C1akQ_-M.mjs                          │ esm  │ 2.66 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage-Cwz2YlSJ.mjs                        │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage-D3pmDY3j.mjs                        │ esm  │ 22.79 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.ja-DjQzoNIH.mjs                     │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.ja-UfEDxgra.mjs                     │ esm  │ 25.33 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.ko-CVm6_eqG.mjs                     │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.ko-DM8Fxqsw.mjs                     │ esm  │ 24.30 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.zh-CN-8ZXtZnhU.mjs                  │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/storage.zh-CN-DZf6XPSR.mjs                  │ esm  │ 22.99 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync-DgAZzfZk.mjs                           │ esm  │ 0.19 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync-LJPU6Mui.mjs                           │ esm  │ 29.46 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.ja-BLixldRE.mjs                        │ esm  │ 31.04 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.ja-DJG0O_O4.mjs                        │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.ko-BDnnWDI2.mjs                        │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.ko-Baj1Tn6u.mjs                        │ esm  │ 30.21 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.zh-CN-BVnAzULw.mjs                     │ esm  │ 0.20 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/sync.zh-CN-DDQk3wOb.mjs                     │ esm  │ 29.15 KiB   │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/use-on-change-B-kUURZr.mjs                  │ esm  │ 1.76 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _ssr/utils-6GexS7iX-BTUk2rPI.mjs                 │ esm  │ 2.22 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ _tanstack-start-manifest_v-DYBOqmfy.mjs          │ esm  │ 0.89 KiB    │
+docs:build: ├──────────────────────────────────────────────────┼──────┼─────────────┤
+docs:build: │ Total (170 modules)                              │      │ 4480.43 KiB │
+docs:build: └──────────────────────────────────────────────────┴──────┴─────────────┘
+docs:build: [prerender] Concurrency: 4
+docs:build: [prerender] Crawling: /
+docs:build: ⎔ Starting local server...
+docs:build: [wrangler:warn] The latest compatibility date supported by the installed Cloudflare Workers Runtime is "2026-03-12",
+docs:build: but you've requested "2026-03-17". Falling back to "2026-03-12"...
+docs:build: Features enabled by your requested compatibility date may not be available.
+docs:build: Upgrade to `wrangler@4.84.1` to remove this warning.
+docs:build: [wrangler:info] ✨ Parsed 1 valid header rule.
+docs:build: [wrangler:info] Ready on http://localhost:39213
+docs:build: [wrangler:info] GET / 307 Temporary Redirect (1424ms)
+docs:build: [wrangler:info] GET /docs 200 OK (104ms)
+docs:build: [prerender] Crawling: /docs
+docs:build: [prerender] Crawling: /docs/getting-started
+docs:build: [prerender] Crawling: /docs/configuration
+docs:build: [prerender] Crawling: /docs/sync
+docs:build: [wrangler:info] GET /docs/ 307 Temporary Redirect (8ms)
+docs:build: [wrangler:info] GET /docs/getting-started/ 307 Temporary Redirect (11ms)
+docs:build: [wrangler:info] GET /docs/configuration/ 307 Temporary Redirect (9ms)
+docs:build: [wrangler:info] GET /docs/sync/ 307 Temporary Redirect (11ms)
+docs:build: [wrangler:info] GET /docs/getting-started 200 OK (55ms)
+docs:build: [wrangler:info] GET /docs 200 OK (53ms)
+docs:build: [prerender] Crawling: /docs/storage
+docs:build: ⎔ Reloading local server...
+docs:build: [prerender] Crawling: /docs/cli
+docs:build: [wrangler:info] GET /docs/configuration 200 OK (140ms)
+docs:build: [wrangler:info] GET /docs/sync 200 OK (143ms)
+docs:build: [wrangler:info] GET /docs/storage/ 307 Temporary Redirect (60ms)
+docs:build: [wrangler:info] GET /docs/cli/ 307 Temporary Redirect (57ms)
+docs:build: [wrangler:info] ✨ Parsed 1 valid header rule.
+docs:build: [prerender] Crawling: /docs/connectors
+docs:build: ⎔ Local server updated and ready
+docs:build: ⎔ Reloading local server...
+docs:build: [wrangler:info] ✨ Parsed 1 valid header rule.
+docs:build: ⎔ Local server updated and ready
+docs:build: ⎔ Reloading local server...
+docs:build: [wrangler:info] ✨ Parsed 1 valid header rule.
+docs:build: ⎔ Local server updated and ready
+docs:build: [wrangler:info] GET /docs/storage 200 OK (1977ms)
+docs:build: [wrangler:info] GET /docs/cli 200 OK (1998ms)
+docs:build: [wrangler:info] GET /docs/connectors/ 307 Temporary Redirect (1895ms)
+docs:build: [wrangler:info] GET /docs/connectors 200 OK (20ms)
+docs:build: [prerender] Crawling: /docs/connectors/apple-notes
+docs:build: [prerender] Crawling: /docs/connectors/gmail
+docs:build: [prerender] Crawling: /docs/connectors/google-calendar
+docs:build: [prerender] Crawling: /docs/connectors/notion
+docs:build: [wrangler:info] GET /docs/connectors/apple-notes/ 307 Temporary Redirect (5ms)
+docs:build: [wrangler:info] GET /docs/connectors/gmail/ 307 Temporary Redirect (13ms)
+docs:build: [wrangler:info] GET /docs/connectors/google-calendar/ 307 Temporary Redirect (14ms)
+docs:build: [wrangler:info] GET /docs/connectors/apple-notes 200 OK (30ms)
+docs:build: [wrangler:info] GET /docs/connectors/notion/ 307 Temporary Redirect (35ms)
+docs:build: [wrangler:info] GET /docs/connectors/google-calendar 200 OK (61ms)
+docs:build: [wrangler:info] GET /docs/connectors/gmail 200 OK (62ms)
+docs:build: [wrangler:info] GET /docs/connectors/notion 200 OK (63ms)
+docs:build: [prerender] Prerendered 12 pages:
+docs:build: [prerender] - /
+docs:build: [prerender] - /docs
+docs:build: [prerender] - /docs/getting-started
+docs:build: [prerender] - /docs/sync
+docs:build: [prerender] - /docs/configuration
+docs:build: [prerender] - /docs/storage
+docs:build: [prerender] - /docs/cli
+docs:build: [prerender] - /docs/connectors
+docs:build: [prerender] - /docs/connectors/apple-notes
+docs:build: [prerender] - /docs/connectors/gmail
+docs:build: [prerender] - /docs/connectors/google-calendar
+docs:build: [prerender] - /docs/connectors/notion
+docs:build: ⎔ Reloading local server...
+docs:build: [wrangler:info] ✨ Parsed 1 valid header rule.
+docs:build: ⎔ Local server updated and ready

@@ -8,10 +8,10 @@ import {
 test("createBuiltinConnectorPlugins respects platform support", () => {
 	expect(
 		createBuiltinConnectorPlugins("darwin").map((plugin) => plugin.id),
-	).toEqual(["notion", "gmail", "google-calendar", "apple-notes"]);
+	).toEqual(["notion", "gmail", "google-calendar", "todoist", "apple-notes"]);
 	expect(
 		createBuiltinConnectorPlugins("linux").map((plugin) => plugin.id),
-	).toEqual(["notion", "gmail", "google-calendar"]);
+	).toEqual(["notion", "gmail", "google-calendar", "todoist"]);
 });
 
 test("createConnectorAliasMap exposes built-in config aliases", () => {

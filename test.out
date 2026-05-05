@@ -1,0 +1,304 @@
+$ turbo run test
+• turbo 2.8.17
+• Packages in scope: @syncdown/cli, @syncdown/connector-apple-notes, @syncdown/connector-gmail, @syncdown/connector-google-calendar, @syncdown/connector-notion, @syncdown/connector-todoist, @syncdown/connectors, @syncdown/core, @syncdown/renderer-md, @syncdown/secrets, @syncdown/sink-fs, @syncdown/state-sqlite, @syncdown/tui, docs
+• Running test in 14 packages
+• Remote caching disabled
+@syncdown/core:typecheck: cache hit, replaying logs c40e883e73c35208
+@syncdown/core:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+docs:typecheck: cache hit, replaying logs b7624d728ec1a440
+docs:typecheck: $ fumadocs-mdx && tsgo --noEmit
+docs:typecheck: [MDX] generated files in 26.17492399999992ms
+@syncdown/connector-notion:typecheck: cache hit, replaying logs afc8a61fd697ffec
+@syncdown/connector-notion:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/sink-fs:typecheck: cache hit, replaying logs afa02c2bace087bd
+@syncdown/sink-fs:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/secrets:typecheck: cache hit, replaying logs e4b93aa12f5a353d
+@syncdown/connector-apple-notes:typecheck: cache hit, replaying logs 79c05a0008878cfa
+@syncdown/secrets:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/connector-google-calendar:typecheck: cache hit, replaying logs 7cdc85c84e4bb986
+@syncdown/connector-apple-notes:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/connector-todoist:typecheck: cache miss, executing 07b7253bec1880c6
+@syncdown/connector-google-calendar:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/core:test: cache hit, replaying logs 8cfb13a686bee733
+@syncdown/core:test: $ bun test ./src/*.test.ts
+@syncdown/core:test: bun test v1.2.14 (6a363a38)
+@syncdown/core:test:
+@syncdown/core:test: src/app.test.ts:
+@syncdown/core:test: (pass) inspect and connector listing include notion and gmail [12.86ms]
+@syncdown/core:test: (pass) run executes only enabled integrations and stores state per integration id [33.20ms]
+@syncdown/core:test: (pass) persists a document before connector completion and defers cursor updates [7.07ms]
+@syncdown/core:test: (pass) keeps partially persisted documents recoverable across failed and successful runs [3023.95ms]
+@syncdown/core:test: (pass) reset removes app data files but keeps synced output [10.12ms]
+@syncdown/core:test: (pass) reset disposes the state store before deleting app data [6.43ms]
+@syncdown/core:test: (pass) reset returns locked when another sync lock is active [4.83ms]
+@syncdown/core:test: (pass) stores snapshots and render version when a source is persisted [9.84ms]
+@syncdown/core:test: (pass) deletes persisted files and state when a source is removed [14.87ms]
+@syncdown/core:test: (pass) resetState clears one integration before a targeted rerun [16.45ms]
+@syncdown/core:test: (pass) gmail connector can reset legacy cursor state during sync and rewrite files [16.87ms]
+@syncdown/core:test: (pass) gmail connector can reset mismatched scoped cursor state during sync [15.85ms]
+@syncdown/core:test: (pass) watch reruns sync cycles and exits cleanly after shutdown [16.34ms]
+@syncdown/core:test: (pass) watch continues after sync errors and retries on the next interval [11.62ms]
+@syncdown/core:test: (pass) openSession runNow updates runtime snapshot and logs [9.25ms]
+@syncdown/core:test: (pass) openSession queues repeated runs for the same connector [7.80ms]
+@syncdown/core:test: (pass) run executes different integrations in parallel while keeping each integration serialized [8.53ms]
+@syncdown/core:test: (pass) per-integration watch starts enabled integrations independently and stops cleanly [7.56ms]
+@syncdown/core:test:
+@syncdown/core:test: src/config.test.ts:
+@syncdown/core:test: (pass) readConfig returns defaults when config file is missing [4.63ms]
+@syncdown/core:test: (pass) ensureConfig writes a missing config file and keeps default integration ids stable [3.48ms]
+@syncdown/core:test: (pass) normalizeConfig re-seeds a missing integration per connector without duplicating existing connectors [2.43ms]
+@syncdown/core:test: (pass) writeConfig persists config after ensuring app directories [2.37ms]
+@syncdown/core:test: (pass) validateManagedOutputDirectory allows missing and empty directories [2.99ms]
+@syncdown/core:test: (pass) validateManagedOutputDirectory rejects non-empty directories [4.40ms]
+@syncdown/core:test: (pass) readConfig normalizes legacy gmail config without a sync filter [2.58ms]
+@syncdown/core:test: (pass) readConfig preserves notion token and oauth connections [2.76ms]
+@syncdown/core:test: (pass) readConfig re-seeds the default Notion oauth app when it is missing [2.51ms]
+@syncdown/core:test: (pass) resolveAppPaths respects XDG environment overrides [0.15ms]
+@syncdown/core:test: (pass) resolveAppPaths uses AppData defaults on Windows [0.14ms]
+@syncdown/core:test:
+@syncdown/core:test: src/google-auth.test.ts:
+@syncdown/core:test: (pass) normalizeGoogleScopes trims, deduplicates, and sorts [0.14ms]
+@syncdown/core:test: (pass) collectGoogleProviderScopes unions enabled connectors and included ids [0.35ms]
+@syncdown/core:test: (pass) readGoogleCredentials loads the canonical google secret keys [0.46ms]
+@syncdown/core:test: (pass) assertGoogleGrantedScopes fails when required scopes are missing [1.19ms]
+@syncdown/core:test: (pass) createGoogleAccessTokenProvider caches refreshed access tokens [0.50ms]
+@syncdown/core:test:
+@syncdown/core:test: src/notion-auth.test.ts:
+@syncdown/core:test: (pass) buildNotionAuthUrl includes the required oauth parameters [0.30ms]
+@syncdown/core:test: (pass) readNotionOAuthConnectionCredentials loads the canonical notion oauth secret keys [0.54ms]
+@syncdown/core:test: (pass) refreshNotionAccessToken returns access token and rotated refresh token [0.88ms]
+@syncdown/core:test:
+@syncdown/core:test: src/run-lock.test.ts:
+@syncdown/core:test: (pass) ignores a fresh lock file when the recorded pid is no longer alive [9.94ms]
+@syncdown/core:test: (pass) watch heartbeat keeps the run lock fresh and blocks competing runs [597.58ms]
+@syncdown/core:test:
+@syncdown/core:test: src/session.test.ts:
+@syncdown/core:test: (pass) session snapshots clone structured progress and clear it after a successful run [8.91ms]
+@syncdown/core:test: (pass) cancelling an active run clears structured progress [5.15ms]
+@syncdown/core:test: (pass) session tracks integrations added or replaced after it opens [8.38ms]
+@syncdown/core:test:
+@syncdown/core:test:  42 pass
+@syncdown/core:test:  0 fail
+@syncdown/core:test:  175 expect() calls
+@syncdown/core:test: Ran 42 tests across 6 files. [3.98s]
+@syncdown/connector-apple-notes:test: cache hit, replaying logs 0e984e7feeb9117e
+@syncdown/connector-apple-notes:test: $ bun test ./src/index.test.ts
+@syncdown/connector-apple-notes:test: bun test v1.2.14 (6a363a38)
+@syncdown/connector-apple-notes:test:
+@syncdown/connector-apple-notes:test: src/index.test.ts:
+@syncdown/connector-apple-notes:test: (pass) validate returns an error on non-macOS [1.45ms]
+@syncdown/connector-apple-notes:test: (pass) validate returns permission guidance when local access is unavailable [0.57ms]
+@syncdown/connector-apple-notes:test: (pass) sync persists notes and removes missing records [2.39ms]
+@syncdown/connector-apple-notes:test: (pass) sync skips locked notes and surfaces warnings without failing [1.54ms]
+@syncdown/connector-apple-notes:test: (pass) sync uses fallback account and folder buckets when missing [0.44ms]
+@syncdown/connector-apple-notes:test:
+@syncdown/connector-apple-notes:test:  5 pass
+@syncdown/connector-apple-notes:test:  0 fail
+@syncdown/connector-apple-notes:test:  18 expect() calls
+@syncdown/connector-apple-notes:test: Ran 5 tests across 1 files. [173.00ms]
+@syncdown/connector-notion:test: cache hit, replaying logs 78732ed0a9f899a2
+@syncdown/connector-notion:test: $ bun test ./src/index.test.ts
+@syncdown/connector-notion:test: bun test v1.2.14 (6a363a38)
+@syncdown/connector-notion:test:
+@syncdown/connector-notion:test: src/index.test.ts:
+@syncdown/connector-notion:test: (pass) uses the latest Notion API version when creating the official client [6.50ms]
+@syncdown/connector-notion:test: (pass) oauth credentials validate and sync through the same bearer token path [19.52ms]
+@syncdown/connector-notion:test: (pass) skips retrieval when candidate updatedAt matches stored record [0.82ms]
+@syncdown/connector-notion:test: (pass) fetches changed pages and persists the refreshed snapshot [0.73ms]
+@syncdown/connector-notion:test: (pass) rebuilds from stored snapshot when render version changes [1.80ms]
+@syncdown/connector-notion:test: (pass) refetches page when stored snapshot schema version is outdated [0.88ms]
+@syncdown/connector-notion:test: (pass) persists discovered pages before querying later data sources [4.23ms]
+@syncdown/connector-notion:test: (pass) sync publishes discovery and determinate page progress [1.34ms]
+@syncdown/connector-google-calendar:test: cache hit, replaying logs 66ae55e1e694c151
+@syncdown/connector-notion:test: (pass) queries data source pages without a filter on the first sync [5.16ms]
+@syncdown/connector-notion:test: (pass) passes the sync cursor to incremental data source queries [0.93ms]
+@syncdown/connector-notion:test: (pass) deduplicates pages returned by shared pages and incremental data source queries [1.04ms]
+@syncdown/connector-notion:test: (pass) deletes stale records that are no longer present in Notion [0.97ms]
+@syncdown/connector-notion:test: (pass) limits concurrent page fetches while persisting every changed candidate [41.75ms]
+@syncdown/connector-notion:test:
+@syncdown/connector-notion:test:  13 pass
+@syncdown/connector-google-calendar:test: $ bun test ./src/index.test.ts
+@syncdown/connector-google-calendar:test: bun test v1.2.14 (6a363a38)
+@syncdown/connector-google-calendar:test:
+@syncdown/connector-notion:test:  0 fail
+@syncdown/connector-google-calendar:test: src/index.test.ts:
+@syncdown/connector-notion:test:  30 expect() calls
+@syncdown/connector-google-calendar:test: (pass) google calendar initial sync persists selected calendar events and encodes per-calendar tokens [22.51ms]
+@syncdown/connector-notion:test: Ran 13 tests across 1 files. [311.00ms]
+@syncdown/connector-google-calendar:test: (pass) google calendar incremental sync deletes cancelled events and ignores recurring instances [1.24ms]
+@syncdown/connector-google-calendar:test: (pass) google calendar purges deselected calendars only [0.94ms]
+@syncdown/connector-google-calendar:test: (pass) google calendar full sync deletes stale records for a selected calendar [6.11ms]
+@syncdown/connector-google-calendar:test:
+@syncdown/connector-google-calendar:test:  4 pass
+@syncdown/connector-google-calendar:test:  0 fail
+@syncdown/connector-google-calendar:test:  10 expect() calls
+@syncdown/connector-google-calendar:test: Ran 4 tests across 1 files. [189.00ms]
+@syncdown/connector-gmail:typecheck: cache hit, replaying logs c87e09bbe0662367
+@syncdown/connector-gmail:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/connector-gmail:test: cache hit, replaying logs c0cc81c61dba2ec9
+@syncdown/connector-gmail:test: $ bun test ./src/index.test.ts
+@syncdown/connector-gmail:test: bun test v1.2.14 (6a363a38)
+@syncdown/connector-gmail:test:
+@syncdown/connector-gmail:test: src/index.test.ts:
+@syncdown/connector-gmail:test: (pass) validation fails when gmail secrets are incomplete [12.85ms]
+@syncdown/connector-gmail:test: (pass) default adapter validates credentials with fetch-based Gmail API calls [7.51ms]
+@syncdown/connector-gmail:test: (pass) initial inbox sync persists one snapshot per message and stores next history id [37.79ms]
+@syncdown/connector-gmail:test: (pass) gmail sync falls back to the configured connection email when profile email is missing [10.41ms]
+@syncdown/connector-gmail:test: (pass) incremental history sync refetches only changed messages [7.15ms]
+@syncdown/connector-gmail:test: (pass) incremental history sync publishes structured determinate progress [0.95ms]
+@syncdown/connector-gmail:test: (pass) initial inbox sync scans the full filtered inbox [0.63ms]
+@syncdown/connector-gmail:test: (pass) message fetches honor configured concurrency [0.98ms]
+@syncdown/connector-gmail:test: (pass) initial inbox sync persists completed messages without waiting for slower fetches [25.79ms]
+@syncdown/connector-gmail:test: (pass) invalid history id falls back to a full scoped rescan [3.31ms]
+@syncdown/connector-gmail:test: (pass) history fallback publishes structured scanning progress [14.89ms]
+@syncdown/connector-gmail:test: (pass) legacy gmail cursor resets integration state before a scoped resync [12.07ms]
+@syncdown/connector-gmail:test: (pass) gmail sync filter changes reset integration state before a scoped resync [10.27ms]
+@syncdown/connector-gmail:test: (pass) messages removed from the active filter delete local files instead of persisting archived state [1.67ms]
+@syncdown/connector-gmail:test: (pass) hard-deleted messages remove local files and do not fail sync [18.94ms]
+@syncdown/connector-gmail:test: (pass) primary-important sync only persists messages with the IMPORTANT label [10.38ms]
+@syncdown/connector-gmail:test: (pass) body extraction prefers text plain and falls back to stripped html [0.50ms]
+@syncdown/connector-gmail:test: (pass) html stripping handles common markup cleanup [0.13ms]
+@syncdown/connector-gmail:test:
+@syncdown/connector-gmail:test:  18 pass
+@syncdown/connector-gmail:test:  0 fail
+@syncdown/connector-gmail:test:  55 expect() calls
+@syncdown/connector-gmail:test: Ran 18 tests across 1 files. [287.00ms]
+@syncdown/tui:typecheck: cache hit, replaying logs 2346d4ed8a453764
+@syncdown/tui:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/tui:test: cache hit, replaying logs a14d004b2b6214ab
+@syncdown/tui:test: $ bun test ./src/*.test.ts
+@syncdown/tui:test: bun test v1.2.14 (6a363a38)
+@syncdown/tui:test:
+@syncdown/tui:test: src/app.test.ts:
+@syncdown/tui:test: (pass) OpenTUI app initial render reflects the single-focus home screen [164.77ms]
+@syncdown/tui:test: (pass) home exposes an update action and reflects an available release [97.80ms]
+@syncdown/tui:test: (pass) home render shows the update banner when a new release is available [91.89ms]
+@syncdown/tui:test: (pass) update route hides install action in source mode [54.42ms]
+@syncdown/tui:test: (pass) update route applies an available release and shows a success notice [58.64ms]
+@syncdown/tui:test: (pass) selection list shrinks to option count and empty notice does not reserve bottom space [16.33ms]
+@syncdown/tui:test: (pass) selection and notice render outside the page box [15.30ms]
+@syncdown/tui:test: (pass) navigation uses a page stack from home to section and back [5.88ms]
+@syncdown/tui:test: (pass) keyboard navigation moves selection and activates the focused menu [75.51ms]
+@syncdown/tui:test: (pass) left arrow navigates back to the previous page [32.45ms]
+@syncdown/tui:test: (pass) custom output path autosaves as soon as the page is confirmed [62.72ms]
+@syncdown/tui:test: (pass) custom output path saves when the folder already exists and is empty [17.04ms]
+@syncdown/tui:test: (pass) custom output path rejects an existing non-empty folder [41.38ms]
+@syncdown/tui:test: (pass) preset output saves a syncdown subdirectory [28.22ms]
+@syncdown/tui:test: (pass) preset output rejects a non-empty syncdown subdirectory [15.25ms]
+@syncdown/tui:test: (pass) keyboard typing updates the focused input route [71.22ms]
+@syncdown/tui:test: (pass) interval selection autosaves and returns to the schedule page [46.79ms]
+@syncdown/tui:test: (pass) gmail inbox filter selection autosaves and returns to the connector page [33.68ms]
+@syncdown/tui:test: (pass) google calendar selection route loads calendars and saves selected ids [28.16ms]
+@syncdown/tui:test: (pass) enabling Google Calendar starts Google login immediately when scopes need an upgrade [27.65ms]
+@syncdown/tui:test: (pass) enabling Gmail reconnects immediately when Google setup is incomplete [13.12ms]
+@syncdown/tui:test: (pass) disconnect confirmation persists immediately [47.53ms]
+@syncdown/tui:test: (pass) notion auth flow validates and saves immediately [12.96ms]
+@syncdown/tui:test: (pass) selecting notion oauth enters the intro screen before setup [5.64ms]
+@syncdown/tui:test: (pass) notion oauth flow validates and saves immediately [18.86ms]
+@syncdown/tui:test: (pass) gmail auth flow validates and saves immediately [35.90ms]
+@syncdown/tui:test: (pass) selecting gmail connect enters the oauth intro screen [11.01ms]
+@syncdown/tui:test: (pass) gmail auth input submits on enter [168.69ms]
+@syncdown/tui:test: (pass) retrying oauth keeps the user on collect-input without reopening setup pages [8.59ms]
+@syncdown/tui:test: (pass) oauth intro can open connector docs without leaving the intro screen [5.04ms]
+@syncdown/tui:test: (pass) persistence failures keep the user on the same page with an inline error [7.85ms]
+@syncdown/tui:test: (pass) auth validation failures keep the user on the auth page with an inline error [8.66ms]
+@syncdown/tui:test: (pass) diagnostics is reached through Advanced and loads doctor output [8.83ms]
+@syncdown/tui:test: (pass) advanced menu exposes reset app data [0.39ms]
+@syncdown/tui:test: (pass) reset app data can be cancelled from the TUI [12.41ms]
+@syncdown/tui:test: (pass) sync dashboard can start watch and run actions [26.75ms]
+@syncdown/tui:test: (pass) reset app data confirms, disposes the session, and exits the TUI [16.14ms]
+@syncdown/tui:test: (pass) reset app data exits and prints the error when reset fails [10.85ms]
+@syncdown/tui:test: (pass) sync dashboard can cancel an active run while the start action is still busy [13.47ms]
+@syncdown/tui:test: (pass) advanced reset is blocked while sync activity is still running [4.71ms]
+@syncdown/tui:test: (pass) sync dashboard renders compact cards and progress at 100x30 [18.06ms]
+@syncdown/tui:test: (pass) sync dashboard renders raw log and compact actions at 80x24 [5.69ms]
+@syncdown/tui:test: (pass) sync dashboard summarizes gmail inbox scan activity in compact mode [6.14ms]
+@syncdown/tui:test: (pass) watch-active sync dashboard blocks back navigation [5.72ms]
+@syncdown/tui:test: (pass) running sync dashboard blocks back navigation and requires cancel before leaving [6.60ms]
+@syncdown/tui:test:
+@syncdown/tui:test: src/auth.test.ts:
+@syncdown/tui:test: (pass) oauth setup pages open their expected provider URLs [1.41ms]
+@syncdown/tui:test: (pass) oauth setup page open failures return browser launch errors [8.93ms]
+@syncdown/tui:test: (pass) google auth session can complete even when browser open fails [2.11ms]
+@syncdown/tui:test: (pass) google auth session rejects callback state mismatch [0.88ms]
+@syncdown/tui:test: (pass) default google oauth client exchanges code over fetch [1.93ms]
+@syncdown/tui:test: (pass) notion oauth session exchanges the callback code over fetch [8.45ms]
+@syncdown/tui:test: (pass) auth validation reuses notion connector validation and checks google scopes [2.43ms]
+@syncdown/tui:test:
+@syncdown/tui:test: src/index.test.ts:
+@syncdown/tui:test: (pass) resolveDocsBaseUrl prefers explicit request, then env, then runtime default [2.11ms]
+@syncdown/tui:test: (pass) launchConfigTui rejects non-interactive terminals [0.73ms]
+@syncdown/tui:test:
+@syncdown/tui:test: src/state.test.ts:
+@syncdown/tui:test: (pass) editing connector state updates the config [2.13ms]
+@syncdown/tui:test: (pass) notion token action transitions keep set and delete semantics [0.21ms]
+@syncdown/tui:test: (pass) google credentials become complete only when all three values exist [0.17ms]
+@syncdown/tui:test: (pass) connector status reports needs setup when enabled credentials are missing [0.16ms]
+@syncdown/tui:test: (pass) google staged connection stores all required secret updates [0.13ms]
+@syncdown/tui:test: (pass) notion oauth staged connection switches the active method and stores oauth secrets [0.36ms]
+@syncdown/tui:test: (pass) gmail disconnect keeps the stored google account and disables the connector [0.23ms]
+@syncdown/tui:test: (pass) google account disconnect deletes shared credentials and disables gmail [0.31ms]
+@syncdown/tui:test: (pass) output preset and interval updates modify the draft immediately [0.27ms]
+@syncdown/tui:test: (pass) output preset paths use syncdown subdirectories [0.71ms]
+@syncdown/tui:test: (pass) output preset detection matches syncdown subdirectories [0.31ms]
+@syncdown/tui:test: (pass) clone and sync draft state support atomic persistence [0.23ms]
+@syncdown/tui:test: (pass) saveDraft writes config and resets secret actions [5.42ms]
+@syncdown/tui:test:
+@syncdown/tui:test: src/view-state.test.ts:
+@syncdown/tui:test: (pass) view state initializes on the home route [0.34ms]
+@syncdown/tui:test: (pass) home options expose the top-level single-focus sections [0.24ms]
+@syncdown/tui:test: (pass) home options collapse to output when output directory is missing [0.19ms]
+@syncdown/tui:test: (pass) routes push and pop like a page stack [0.17ms]
+@syncdown/tui:test: (pass) connector auth route exposes field descriptors and input state [0.17ms]
+@syncdown/tui:test: (pass) output custom route is treated as input mode [0.13ms]
+@syncdown/tui:test: (pass) connector detail and output pages render focused body text [0.29ms]
+@syncdown/tui:test: (pass) output preset options point to syncdown subdirectories [0.21ms]
+@syncdown/tui:test: (pass) home body surfaces an available update above the connector summary [0.17ms]
+@syncdown/tui:test: (pass) oauth collect-input body shows setup page status and manual url [0.24ms]
+@syncdown/tui:test: (pass) oauth intro body explains the flow and links to connector docs [0.24ms]
+@syncdown/tui:test: (pass) oauth intro options expose open docs before continuing [0.28ms]
+@syncdown/tui:test: (pass) connected connector hides the connect action in details [0.12ms]
+@syncdown/tui:test: (pass) disconnected connector with stored credentials still shows both notion auth methods and disconnect [0.19ms]
+@syncdown/tui:test: (pass) fully disconnected connector hides the disconnect action but still exposes both notion auth methods [0.19ms]
+@syncdown/tui:test: (pass) interval and diagnostics routes provide dedicated page content [0.60ms]
+@syncdown/tui:test: (pass) gmail connector details expose inbox filter settings [0.97ms]
+@syncdown/tui:test: (pass) connectors and schedule expose google calendar [0.19ms]
+@syncdown/tui:test: (pass) sync dashboard route renders status summary and actions [0.41ms]
+@syncdown/tui:test: (pass) sync dashboard shows only stop when a run is active [0.26ms]
+@syncdown/tui:test: (pass) sync dashboard hides sync actions for connectors that are not connected [0.21ms]
+@syncdown/tui:test: (pass) sync dashboard hides all run actions when nothing is connected [0.16ms]
+@syncdown/tui:test: (pass) diagnostics entry only appears under Advanced [0.19ms]
+@syncdown/tui:test:
+@syncdown/tui:test:  90 pass
+@syncdown/tui:test:  0 fail
+@syncdown/tui:test:  328 expect() calls
+@syncdown/tui:test: Ran 90 tests across 5 files. [2.17s]
+@syncdown/connector-todoist:typecheck: $ tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/state-sqlite:typecheck: cache hit, replaying logs ecbaee1dffbdcab5
+@syncdown/state-sqlite:typecheck: $ bun run ./scripts/generate-migrations.ts && tsgo -p ./tsconfig.json --noEmit --pretty false
+@syncdown/state-sqlite:test: cache hit, replaying logs 4d0a7e1de0c2795a
+@syncdown/state-sqlite:test: $ bun run ./scripts/generate-migrations.ts && bun test ./src/index.test.ts
+@syncdown/state-sqlite:test: bun test v1.2.14 (6a363a38)
+@syncdown/state-sqlite:test:
+@syncdown/state-sqlite:test: src/index.test.ts:
+@syncdown/state-sqlite:test: (pass) bootstraps migrations and persists state across store instances [219.91ms]
+@syncdown/state-sqlite:test: (pass) renames legacy json state files before creating a new sqlite database [35.47ms]
+@syncdown/state-sqlite:test: (pass) dispose closes the database and allows the store to reopen [28.92ms]
+@syncdown/state-sqlite:test: (pass) deletes persisted source records and snapshots [31.42ms]
+@syncdown/state-sqlite:test: (pass) lists persisted source records for a single integration [50.17ms]
+@syncdown/state-sqlite:test: (pass) resets one integration without touching another [51.55ms]
+@syncdown/state-sqlite:test:
+@syncdown/state-sqlite:test:  6 pass
+@syncdown/state-sqlite:test:  0 fail
+@syncdown/state-sqlite:test:  24 expect() calls
+@syncdown/state-sqlite:test: Ran 6 tests across 1 files. [601.00ms]
+@syncdown/connector-todoist:typecheck: src/sync.ts(294,1): error TS1005: '}' expected.
+@syncdown/connector-todoist:typecheck: ERROR: command finished with error: command (/app/packages/connector-todoist) /usr/local/bun/bin/bun run typecheck exited (2)
+@syncdown/connector-todoist#typecheck: command (/app/packages/connector-todoist) /usr/local/bun/bin/bun run typecheck exited (2)
+
+ Tasks:    17 successful, 18 total
+Cached:    17 cached, 18 total
+  Time:    733ms
+Failed:    @syncdown/connector-todoist#typecheck
+
+ ERROR  run failed: command  exited (2)
