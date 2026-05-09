@@ -65,15 +65,34 @@ function getFileIdentifier(document: SourceSnapshot): string {
 
 const MAX_FILENAME_LENGTH = 255;
 
+const utf8Encoder = new TextEncoder();
+const utf8Decoder = new TextDecoder("utf-8");
+
+function truncateUtf8(input: string, maxBytes: number): string {
+	if (maxBytes <= 0) {
+		return "";
+	}
+	const bytes = utf8Encoder.encode(input);
+	if (bytes.length <= maxBytes) {
+		return input;
+	}
+	// Walk back past UTF-8 continuation bytes (10xxxxxx) so we never split a code point.
+	let end = maxBytes;
+	while (end > 0 && (bytes[end] & 0xc0) === 0x80) {
+		end--;
+	}
+	return utf8Decoder.decode(bytes.subarray(0, end));
+}
+
 function buildFileName(document: SourceSnapshot): string {
 	const identifier = getFileIdentifier(document);
 	const suffix = `-${identifier}.md`;
 	const rawSlug = document.slug || slugifySegment(document.title);
-	const maxSlugLength = MAX_FILENAME_LENGTH - suffix.length;
+	const suffixBytes = utf8Encoder.encode(suffix).length;
+	const maxSlugBytes = Math.max(0, MAX_FILENAME_LENGTH - suffixBytes);
+	const truncated = truncateUtf8(rawSlug, maxSlugBytes);
 	const slug =
-		rawSlug.length > maxSlugLength
-			? rawSlug.slice(0, maxSlugLength).replace(/-+$/, "")
-			: rawSlug;
+		truncated === rawSlug ? rawSlug : truncated.replace(/-+$/, "");
 	return `${slug}${suffix}`;
 }
 
