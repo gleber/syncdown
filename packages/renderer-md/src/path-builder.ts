@@ -63,8 +63,25 @@ function getFileIdentifier(document: SourceSnapshot): string {
 	return document.sourceId;
 }
 
+const MAX_FILENAME_LENGTH = 255;
+
+function truncateToBytes(str: string, maxBytes: number): string {
+	if (maxBytes <= 0) return "";
+	if (Buffer.byteLength(str) <= maxBytes) return str;
+	return Buffer.from(str, "utf8").subarray(0, maxBytes).toString("utf8").replace(/�+$/, "");
+}
+
+function buildFileName(document: SourceSnapshot): string {
+	const identifier = getFileIdentifier(document);
+	const suffix = `-${identifier}.md`;
+	const rawSlug = document.slug || slugifySegment(document.title);
+	const maxSlugBytes = Math.max(0, MAX_FILENAME_LENGTH - Buffer.byteLength(suffix));
+	const slug = truncateToBytes(rawSlug, maxSlugBytes).replace(/-+$/, "");
+	return `${slug}${suffix}`;
+}
+
 export function buildRelativePath(document: SourceSnapshot): string {
-	const fileName = `${document.slug || slugifySegment(document.title)}-${getFileIdentifier(document)}.md`;
+	const fileName = buildFileName(document);
 	if (document.pathHint.kind === "message") {
 		const createdAt = document.metadata.createdAt
 			? new Date(document.metadata.createdAt)
