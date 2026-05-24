@@ -125,7 +125,11 @@ function createRequest(
 				clientId: "client-id",
 				clientSecret: "client-secret",
 				refreshToken: "refresh-token",
-				requiredScopes: ["https://www.googleapis.com/auth/contacts.readonly"],
+				requiredScopes: [
+					"https://www.googleapis.com/auth/contacts.readonly",
+					"https://www.googleapis.com/auth/userinfo.email",
+					"https://www.googleapis.com/auth/userinfo.profile",
+				],
 			} satisfies GoogleResolvedAuth),
 		throwIfCancelled() {},
 		async persistSource() {},

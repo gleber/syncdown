@@ -25,6 +25,8 @@ const GOOGLE_PEOPLE_API_BASE_URL = "https://people.googleapis.com/v1/";
 
 export const GOOGLE_CONTACTS_REQUIRED_SCOPES = [
 	"https://www.googleapis.com/auth/contacts.readonly",
+	"https://www.googleapis.com/auth/userinfo.email",
+	"https://www.googleapis.com/auth/userinfo.profile",
 ] as const;
 
 const PERSON_FIELDS = [
