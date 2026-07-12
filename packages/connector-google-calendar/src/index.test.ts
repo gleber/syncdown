@@ -153,6 +153,10 @@ test("google calendar initial sync persists selected calendar events and encodes
 			async listCalendars() {
 				return [{ id: "primary", summary: "Primary Calendar", primary: true }];
 			},
+			async getEvent() { return {} as any; },
+			async createEvent() { return {} as any; },
+			async updateEvent() { return {} as any; },
+			async deleteEvent() {},
 			async listEvents(_credentials, calendarId, options) {
 				expect(calendarId).toBe("primary");
 				expect(options.syncToken).toBeUndefined();
@@ -201,6 +205,10 @@ test("google calendar incremental sync deletes cancelled events and ignores recu
 			async listCalendars() {
 				return [{ id: "primary", summary: "Primary Calendar", primary: true }];
 			},
+			async getEvent() { return {} as any; },
+			async createEvent() { return {} as any; },
+			async updateEvent() { return {} as any; },
+			async deleteEvent() {},
 			async listEvents() {
 				return {
 					events: [
@@ -264,6 +272,10 @@ test("google calendar purges deselected calendars only", async () => {
 			async listCalendars() {
 				return [{ id: "work", summary: "Work" }];
 			},
+			async getEvent() { return {} as any; },
+			async createEvent() { return {} as any; },
+			async updateEvent() { return {} as any; },
+			async deleteEvent() {},
 			async listEvents() {
 				return {
 					events: [],
@@ -307,6 +319,10 @@ test("google calendar full sync deletes stale records for a selected calendar", 
 			async listCalendars() {
 				return [{ id: "primary", summary: "Primary" }];
 			},
+			async getEvent() { return {} as any; },
+			async createEvent() { return {} as any; },
+			async updateEvent() { return {} as any; },
+			async deleteEvent() {},
 			async listEvents() {
 				return {
 					events: [

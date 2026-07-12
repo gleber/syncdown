@@ -363,12 +363,32 @@ export interface ConnectorSyncResult {
 	nextCursor: string | null;
 }
 
+export interface ParsedLocalSource {
+	sourceId: string;
+	snapshot: SourceSnapshot;
+	lastModifiedLocal: number;
+}
+
+export interface ConnectorPushRequest extends ConnectorSyncRequest {
+	createdSources: ParsedLocalSource[];
+	updatedSources: ParsedLocalSource[];
+	deletedSourceIds: string[];
+}
+
+export interface ConnectorPushResult {
+	success: boolean;
+	pushedIds: string[];
+	failedIds: string[];
+	createdSourceMappings?: Record<string, SourceSnapshot>;
+}
+
 export interface Connector {
 	id: ConnectorId;
 	label: string;
 	setupMethods: readonly SetupMethodDescriptor[];
 	validate(request: ConnectorSyncRequest): Promise<HealthCheck>;
 	sync(request: ConnectorSyncRequest): Promise<ConnectorSyncResult>;
+	push?(request: ConnectorPushRequest): Promise<ConnectorPushResult>;
 }
 
 export interface ConnectorRenderHooks {
@@ -428,9 +448,21 @@ export interface SinkWriteResult {
 	action: "created" | "updated" | "unchanged";
 }
 
+export interface LocalStateModifications {
+	createdSources: ParsedLocalSource[];
+	updatedSources: ParsedLocalSource[];
+	deletedSourceIds: string[];
+}
+
 export interface DocumentSink {
 	write(request: SinkWriteRequest): Promise<SinkWriteResult>;
 	delete(outputDir: string, relativePath: string): Promise<void>;
+	analyzeLocalModifications?(
+		outputDir: string,
+		integrationId: string,
+		stateRecords: SourceRecord[],
+		stateSnapshots: Map<string, StoredSourceSnapshot>
+	): Promise<LocalStateModifications>;
 }
 
 export interface StateStore {

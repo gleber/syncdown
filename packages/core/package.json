@@ -11,5 +11,8 @@
 	"scripts": {
 		"typecheck": "tsgo -p ./tsconfig.json --noEmit --pretty false",
 		"test": "bun test ./src/*.test.ts"
+	},
+	"dependencies": {
+		"yaml": "^2.8.3"
 	}
 }
