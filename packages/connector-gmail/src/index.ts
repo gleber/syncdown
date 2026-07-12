@@ -31,7 +31,11 @@ export const GMAIL_REQUIRED_SCOPES = [
 ] as const;
 
 type GmailCredentials = GoogleOAuthCredentials;
-type StoredGmailCursor = { historyId: string; syncFilter: GmailSyncFilter };
+type StoredGmailCursor = {
+	historyId: string;
+	syncFilter: GmailSyncFilter;
+	grouping: "thread";
+};
 
 export interface GmailHeader {
 	name?: string | null;
@@ -60,12 +64,20 @@ export interface GmailMessage {
 	payload?: GmailPart | null;
 }
 
+export interface GmailThread {
+	id: string;
+	historyId?: string | null;
+	messages?: GmailMessage[] | null;
+}
+
+type GmailHistoryMessage = Pick<GmailMessage, "id" | "threadId">;
+
 export interface GmailHistoryRecord {
-	messages?: Array<Pick<GmailMessage, "id">> | null;
-	messagesAdded?: Array<{ message?: Pick<GmailMessage, "id"> | null }> | null;
-	messagesDeleted?: Array<{ message?: Pick<GmailMessage, "id"> | null }> | null;
-	labelsAdded?: Array<{ message?: Pick<GmailMessage, "id"> | null }> | null;
-	labelsRemoved?: Array<{ message?: Pick<GmailMessage, "id"> | null }> | null;
+	messages?: GmailHistoryMessage[] | null;
+	messagesAdded?: Array<{ message?: GmailHistoryMessage | null }> | null;
+	messagesDeleted?: Array<{ message?: GmailHistoryMessage | null }> | null;
+	labelsAdded?: Array<{ message?: GmailHistoryMessage | null }> | null;
+	labelsRemoved?: Array<{ message?: GmailHistoryMessage | null }> | null;
 }
 
 export interface GmailHistoryResult {
@@ -81,11 +93,11 @@ export interface GmailProfile {
 export interface GmailAdapter {
 	validate(credentials: GmailCredentials): Promise<void>;
 	getProfile(credentials: GmailCredentials): Promise<GmailProfile>;
-	iterateInboxMessageIds?(
+	iterateInboxThreadIds?(
 		credentials: GmailCredentials,
 		syncFilter: GmailSyncFilter,
 	): AsyncIterable<string>;
-	listInboxMessageIds(
+	listInboxThreadIds(
 		credentials: GmailCredentials,
 		syncFilter: GmailSyncFilter,
 	): Promise<string[]>;
@@ -93,6 +105,10 @@ export interface GmailAdapter {
 		credentials: GmailCredentials,
 		startHistoryId: string,
 	): Promise<GmailHistoryResult>;
+	getThread(
+		credentials: GmailCredentials,
+		threadId: string,
+	): Promise<GmailThread | null>;
 	getMessage(
 		credentials: GmailCredentials,
 		messageId: string,
@@ -104,8 +120,8 @@ interface GmailProfileResponse {
 	emailAddress?: string | null;
 }
 
-interface GmailListMessagesResponse {
-	messages?: Array<{ id?: string | null }> | null;
+interface GmailListThreadsResponse {
+	threads?: Array<{ id?: string | null }> | null;
 	nextPageToken?: string | null;
 }
 
@@ -213,16 +229,16 @@ class OfficialGmailAdapter implements GmailAdapter {
 		};
 	}
 
-	async *iterateInboxMessageIds(
+	async *iterateInboxThreadIds(
 		credentials: GmailCredentials,
 		syncFilter: GmailSyncFilter,
 	): AsyncIterable<string> {
 		let pageToken: string | undefined;
 
 		do {
-			const response = await this.request<GmailListMessagesResponse>(
+			const response = await this.request<GmailListThreadsResponse>(
 				credentials,
-				"users/me/messages",
+				"users/me/threads",
 				{
 					labelIds: "INBOX",
 					q: toSearchQuery(syncFilter),
@@ -231,9 +247,9 @@ class OfficialGmailAdapter implements GmailAdapter {
 				},
 			);
 
-			for (const message of response.messages ?? []) {
-				if (message.id) {
-					yield message.id;
+			for (const thread of response.threads ?? []) {
+				if (thread.id) {
+					yield thread.id;
 				}
 			}
 
@@ -241,12 +257,12 @@ class OfficialGmailAdapter implements GmailAdapter {
 		} while (pageToken);
 	}
 
-	async listInboxMessageIds(
+	async listInboxThreadIds(
 		credentials: GmailCredentials,
 		syncFilter: GmailSyncFilter,
 	): Promise<string[]> {
 		const ids: string[] = [];
-		for await (const id of this.iterateInboxMessageIds(
+		for await (const id of this.iterateInboxThreadIds(
 			credentials,
 			syncFilter,
 		)) {
@@ -290,6 +306,32 @@ class OfficialGmailAdapter implements GmailAdapter {
 		}
 
 		return { history };
+	}
+
+	async getThread(
+		credentials: GmailCredentials,
+		threadId: string,
+	): Promise<GmailThread | null> {
+		try {
+			const response = await this.request<GmailThread>(
+				credentials,
+				`users/me/threads/${threadId}`,
+				{
+					format: "full",
+				},
+			);
+
+			if (!response.id) {
+				return null;
+			}
+
+			return response;
+		} catch (error) {
+			if (error instanceof GmailApiError && error.status === 404) {
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	async getMessage(
@@ -455,39 +497,92 @@ function computeSourceHash(
 		.digest("hex");
 }
 
-function toSourceSnapshot(
-	integrationId: string,
-	message: GmailMessage,
-	accountEmail?: string,
-): SourceSnapshot {
-	const subject = getHeaderValue(message, "Subject") ?? "(no subject)";
-	const createdAt =
+function getMessageTimestamp(message: GmailMessage): number {
+	const iso =
 		toIsoDate(message.internalDate) ??
 		toIsoDate(getHeaderValue(message, "Date"));
+	return iso ? Date.parse(iso) : 0;
+}
+
+function formatMessageSection(message: GmailMessage): string {
+	const from = getHeaderValue(message, "From") ?? "Unknown sender";
+	const date =
+		toIsoDate(message.internalDate) ??
+		getHeaderValue(message, "Date") ??
+		"unknown date";
+	const headerLines = [`## ${from} — ${date}`];
+	const to = getHeaderValue(message, "To");
+	if (to) {
+		headerLines.push(`To: ${to}`);
+	}
+	const cc = getHeaderValue(message, "Cc");
+	if (cc) {
+		headerLines.push(`Cc: ${cc}`);
+	}
+
+	const body = extractMessageBody(message);
+	return body ? `${headerLines.join("\n")}\n\n${body}` : headerLines.join("\n");
+}
+
+function toThreadSnapshot(
+	integrationId: string,
+	threadId: string,
+	messages: readonly GmailMessage[],
+	accountEmail?: string,
+): SourceSnapshot {
+	const sorted = [...messages].sort(
+		(a, b) => getMessageTimestamp(a) - getMessageTimestamp(b),
+	);
+	const first = sorted[0];
+	const last = sorted[sorted.length - 1];
+	if (!first || !last) {
+		throw new Error(`Cannot snapshot empty Gmail thread: ${threadId}`);
+	}
+	const subject = getHeaderValue(first, "Subject") ?? "(no subject)";
+	const createdAt =
+		toIsoDate(first.internalDate) ?? toIsoDate(getHeaderValue(first, "Date"));
+	const updatedAt =
+		toIsoDate(last.internalDate) ??
+		toIsoDate(getHeaderValue(last, "Date")) ??
+		createdAt;
+	const participants = [
+		...new Set(
+			sorted
+				.map((message) => getHeaderValue(message, "From"))
+				.filter((value): value is string => Boolean(value)),
+		),
+	];
+	const labelIds = [
+		...new Set(sorted.flatMap((message) => message.labelIds ?? [])),
+	];
 	const metadata = {
-		sourceUrl: `https://mail.google.com/mail/u/0/#inbox/${message.id}`,
+		sourceUrl: `https://mail.google.com/mail/u/0/#inbox/${threadId}`,
 		createdAt,
-		updatedAt: createdAt,
-		gmailThreadId: message.threadId ?? undefined,
-		gmailLabelIds: message.labelIds ?? undefined,
+		updatedAt,
+		gmailThreadId: threadId,
+		gmailLabelIds: labelIds.length > 0 ? labelIds : undefined,
 		gmailAccountEmail: accountEmail,
-		gmailFrom: getHeaderValue(message, "From"),
-		gmailTo: splitAddressHeader(getHeaderValue(message, "To")),
-		gmailCc: splitAddressHeader(getHeaderValue(message, "Cc")),
-		gmailSnippet: message.snippet ?? undefined,
+		gmailFrom: getHeaderValue(first, "From"),
+		gmailTo: splitAddressHeader(getHeaderValue(first, "To")),
+		gmailCc: splitAddressHeader(getHeaderValue(first, "Cc")),
+		gmailSnippet: last.snippet ?? undefined,
+		gmailMessageCount: sorted.length,
+		gmailParticipants: participants.length > 0 ? participants : undefined,
 	};
 
 	const snapshotBase: Omit<SourceSnapshot, "sourceHash"> = {
 		integrationId,
 		connectorId: "gmail",
-		sourceId: message.id,
-		entityType: "message",
+		sourceId: threadId,
+		entityType: "thread",
 		title: subject,
 		slug: "",
 		pathHint: { kind: "message", gmailAccountEmail: accountEmail },
 		metadata,
-		bodyMd: extractMessageBody(message),
-		snapshotSchemaVersion: "1",
+		bodyMd: sorted
+			.map((message) => formatMessageSection(message))
+			.join("\n\n---\n\n"),
+		snapshotSchemaVersion: "2",
 	};
 
 	return {
@@ -532,14 +627,29 @@ function resolveAccountEmail(
 	return undefined;
 }
 
-function collectChangedMessageIds(history: GmailHistoryRecord[]): string[] {
-	const ids = new Set<string>();
+interface ChangedThreads {
+	threadIds: Set<string>;
+	messageIdsWithoutThread: Set<string>;
+}
+
+function collectChangedThreads(history: GmailHistoryRecord[]): ChangedThreads {
+	const threadIds = new Set<string>();
+	const messageIdsWithoutThread = new Set<string>();
+
+	const record = (message: GmailHistoryMessage | null | undefined) => {
+		if (!message) {
+			return;
+		}
+		if (message.threadId) {
+			threadIds.add(message.threadId);
+		} else if (message.id) {
+			messageIdsWithoutThread.add(message.id);
+		}
+	};
 
 	for (const entry of history) {
 		for (const message of entry.messages ?? []) {
-			if (message.id) {
-				ids.add(message.id);
-			}
+			record(message);
 		}
 
 		for (const collection of [
@@ -549,14 +659,12 @@ function collectChangedMessageIds(history: GmailHistoryRecord[]): string[] {
 			entry.labelsRemoved,
 		]) {
 			for (const item of collection ?? []) {
-				if (item.message?.id) {
-					ids.add(item.message.id);
-				}
+				record(item.message);
 			}
 		}
 	}
 
-	return [...ids];
+	return { threadIds, messageIdsWithoutThread };
 }
 
 function getGmailSyncFilter(request: ConnectorSyncRequest): GmailSyncFilter {
@@ -573,7 +681,8 @@ function getGmailSyncFilter(request: ConnectorSyncRequest): GmailSyncFilter {
 }
 
 function toSearchQuery(syncFilter: GmailSyncFilter): string {
-	if (syncFilter === "primary-important") return "category:primary label:important";
+	if (syncFilter === "primary-important")
+		return "category:primary label:important";
 	if (syncFilter === "inbox") return "in:inbox";
 	return "category:primary";
 }
@@ -602,9 +711,11 @@ function isMessageEligible(
 }
 
 function formatRemovalReason(syncFilter: GmailSyncFilter): string {
-	if (syncFilter === "primary-important") return "Gmail message removed from the active primary+important filter during sync";
-	if (syncFilter === "inbox") return "Gmail message removed from the active inbox filter during sync";
-	return "Gmail message removed from the active primary filter during sync";
+	if (syncFilter === "primary-important")
+		return "Gmail thread removed from the active primary+important filter during sync";
+	if (syncFilter === "inbox")
+		return "Gmail thread removed from the active inbox filter during sync";
+	return "Gmail thread removed from the active primary filter during sync";
 }
 
 function encodeCursor(
@@ -618,6 +729,7 @@ function encodeCursor(
 	return JSON.stringify({
 		historyId,
 		syncFilter,
+		grouping: "thread",
 	} satisfies StoredGmailCursor);
 }
 
@@ -640,6 +752,10 @@ function decodeCursor(
 			parsed.syncFilter !== "primary-important" &&
 			parsed.syncFilter !== "inbox"
 		) {
+			return { historyId: null, resetReason: "legacy" };
+		}
+
+		if (parsed.grouping !== "thread") {
 			return { historyId: null, resetReason: "legacy" };
 		}
 
@@ -740,14 +856,14 @@ async function processWithConcurrency<T>(
 	}
 }
 
-async function* iterateInboxMessageIds(
+async function* iterateInboxThreadIds(
 	adapter: GmailAdapter,
 	credentials: GmailCredentials,
 	syncFilter: GmailSyncFilter,
 	throwIfCancelled?: () => void,
 ): AsyncIterable<string> {
-	if (adapter.iterateInboxMessageIds) {
-		for await (const id of adapter.iterateInboxMessageIds(
+	if (adapter.iterateInboxThreadIds) {
+		for await (const id of adapter.iterateInboxThreadIds(
 			credentials,
 			syncFilter,
 		)) {
@@ -757,7 +873,7 @@ async function* iterateInboxMessageIds(
 		return;
 	}
 
-	for (const id of await adapter.listInboxMessageIds(credentials, syncFilter)) {
+	for (const id of await adapter.listInboxThreadIds(credentials, syncFilter)) {
 		throwIfCancelled?.();
 		yield id;
 	}
@@ -850,7 +966,7 @@ class GmailConnector implements Connector {
 			since = null;
 		}
 
-		let processedMessages = 0;
+		let processedThreads = 0;
 		const publishMailboxHistoryProgress = () => {
 			request.setProgress({
 				mode: "indeterminate",
@@ -858,168 +974,117 @@ class GmailConnector implements Connector {
 				detail: null,
 				completed: null,
 				total: null,
-				unit: "messages",
+				unit: "threads",
 			});
 		};
 		const publishInboxScanProgress = () => {
 			request.setProgress({
 				mode: "indeterminate",
 				phase: "Scanning inbox",
-				detail: `processed ${processedMessages} | concurrency ${fetchConcurrency}`,
+				detail: `processed ${processedThreads} | concurrency ${fetchConcurrency}`,
 				completed: null,
 				total: null,
-				unit: "messages",
+				unit: "threads",
 			});
 		};
 		const publishIncrementalProgress = (total: number) => {
 			request.setProgress({
 				mode: "determinate",
-				phase: "Fetching changed messages",
-				detail: `processed ${processedMessages} of ${total} | concurrency ${fetchConcurrency}`,
-				completed: processedMessages,
+				phase: "Fetching changed threads",
+				detail: `processed ${processedThreads} of ${total} | concurrency ${fetchConcurrency}`,
+				completed: processedThreads,
 				total,
-				unit: "messages",
+				unit: "threads",
 			});
 		};
 
-		if (!since) {
+		const processThread = async (
+			threadId: string,
+			publishProgress: () => void,
+		) => {
+			request.throwIfCancelled();
+			const thread = await this.adapter.getThread(credentials, threadId);
+
+			if (!thread) {
+				await request.deleteSource(threadId);
+				processedThreads += 1;
+				publishProgress();
+				request.io.write(`Gmail thread deleted during sync: ${threadId}`);
+				return;
+			}
+
+			const eligibleMessages = (thread.messages ?? []).filter((message) =>
+				isMessageEligible(message, syncFilter),
+			);
+			if (eligibleMessages.length === 0) {
+				await request.deleteSource(threadId);
+				processedThreads += 1;
+				publishProgress();
+				request.io.write(`${formatRemovalReason(syncFilter)}: ${threadId}`);
+				return;
+			}
+
+			await request.persistSource(
+				toThreadSnapshot(
+					request.integration.id,
+					threadId,
+					eligibleMessages,
+					accountEmail,
+				),
+			);
+			processedThreads += 1;
+			publishProgress();
+		};
+
+		const runFullScan = async () => {
 			publishInboxScanProgress();
 			request.io.write(
 				`Gmail progress: streaming inbox scan concurrency=${fetchConcurrency}`,
 			);
 			await processWithConcurrency(
-				iterateInboxMessageIds(this.adapter, credentials, syncFilter, () =>
+				iterateInboxThreadIds(this.adapter, credentials, syncFilter, () =>
 					request.throwIfCancelled(),
 				),
 				fetchConcurrency,
-				async (messageId) => {
-					request.throwIfCancelled();
-					const message = await this.adapter.getMessage(credentials, messageId);
-
-					if (!message) {
-						await request.deleteSource(messageId);
-						processedMessages += 1;
-						publishInboxScanProgress();
-						request.io.write(`Gmail message deleted during sync: ${messageId}`);
-						return;
-					}
-
-					if (!isMessageEligible(message, syncFilter)) {
-						await request.deleteSource(messageId);
-						processedMessages += 1;
-						publishInboxScanProgress();
-						request.io.write(
-							`${formatRemovalReason(syncFilter)}: ${messageId}`,
-						);
-						return;
-					}
-
-					await request.persistSource(
-						toSourceSnapshot(request.integration.id, message, accountEmail),
-					);
-					processedMessages += 1;
-					publishInboxScanProgress();
-				},
+				(threadId) => processThread(threadId, publishInboxScanProgress),
 				() => request.throwIfCancelled(),
 			);
+		};
+
+		if (!since) {
+			await runFullScan();
 		} else {
 			request.throwIfCancelled();
 			publishMailboxHistoryProgress();
 			const historyResult = await this.adapter.listHistory(credentials, since);
 			if (historyResult.invalidCursor) {
-				processedMessages = 0;
-				publishInboxScanProgress();
+				processedThreads = 0;
 				request.io.write(
 					"Gmail history cursor expired. Falling back to a full scoped rescan.",
 				);
-				request.io.write(
-					`Gmail progress: streaming inbox scan concurrency=${fetchConcurrency}`,
-				);
-				await processWithConcurrency(
-					iterateInboxMessageIds(this.adapter, credentials, syncFilter, () =>
-						request.throwIfCancelled(),
-					),
-					fetchConcurrency,
-					async (messageId) => {
-						request.throwIfCancelled();
-						const message = await this.adapter.getMessage(
-							credentials,
-							messageId,
-						);
-
-						if (!message) {
-							await request.deleteSource(messageId);
-							processedMessages += 1;
-							publishInboxScanProgress();
-							request.io.write(
-								`Gmail message deleted during sync: ${messageId}`,
-							);
-							return;
-						}
-
-						if (!isMessageEligible(message, syncFilter)) {
-							await request.deleteSource(messageId);
-							processedMessages += 1;
-							publishInboxScanProgress();
-							request.io.write(
-								`${formatRemovalReason(syncFilter)}: ${messageId}`,
-							);
-							return;
-						}
-
-						await request.persistSource(
-							toSourceSnapshot(request.integration.id, message, accountEmail),
-						);
-						processedMessages += 1;
-						publishInboxScanProgress();
-					},
-					() => request.throwIfCancelled(),
-				);
+				await runFullScan();
 			} else {
-				const uniqueIds = [
-					...new Set(collectChangedMessageIds(historyResult.history)),
-				];
-				processedMessages = 0;
-				publishIncrementalProgress(uniqueIds.length);
+				const changed = collectChangedThreads(historyResult.history);
+				for (const messageId of changed.messageIdsWithoutThread) {
+					request.throwIfCancelled();
+					const message = await this.adapter.getMessage(credentials, messageId);
+					if (message?.threadId) {
+						changed.threadIds.add(message.threadId);
+					}
+				}
+				const uniqueThreadIds = [...changed.threadIds];
+				processedThreads = 0;
+				publishIncrementalProgress(uniqueThreadIds.length);
 				request.io.write(
-					`Gmail progress: messages=${uniqueIds.length} concurrency=${fetchConcurrency}`,
+					`Gmail progress: threads=${uniqueThreadIds.length} concurrency=${fetchConcurrency}`,
 				);
 				await processWithConcurrency(
-					uniqueIds,
+					uniqueThreadIds,
 					fetchConcurrency,
-					async (messageId) => {
-						request.throwIfCancelled();
-						const message = await this.adapter.getMessage(
-							credentials,
-							messageId,
-						);
-
-						if (!message) {
-							await request.deleteSource(messageId);
-							processedMessages += 1;
-							publishIncrementalProgress(uniqueIds.length);
-							request.io.write(
-								`Gmail message deleted during sync: ${messageId}`,
-							);
-							return;
-						}
-
-						if (!isMessageEligible(message, syncFilter)) {
-							await request.deleteSource(messageId);
-							processedMessages += 1;
-							publishIncrementalProgress(uniqueIds.length);
-							request.io.write(
-								`${formatRemovalReason(syncFilter)}: ${messageId}`,
-							);
-							return;
-						}
-
-						await request.persistSource(
-							toSourceSnapshot(request.integration.id, message, accountEmail),
-						);
-						processedMessages += 1;
-						publishIncrementalProgress(uniqueIds.length);
-					},
+					(threadId) =>
+						processThread(threadId, () =>
+							publishIncrementalProgress(uniqueThreadIds.length),
+						),
 					() => request.throwIfCancelled(),
 				);
 			}
@@ -1200,7 +1265,11 @@ export function createGmailConnectorPlugin(
 				{
 					key: "gmail.syncFilter",
 					async setValue(context, rawValue) {
-						if (rawValue !== "primary" && rawValue !== "primary-important" && rawValue !== "inbox") {
+						if (
+							rawValue !== "primary" &&
+							rawValue !== "primary-important" &&
+							rawValue !== "inbox"
+						) {
 							throw new Error(
 								"gmail.syncFilter must be one of: primary, primary-important, inbox.",
 							);
@@ -1299,7 +1368,7 @@ export function createGmailConnectorPlugin(
 			],
 		},
 		render: {
-			version: "1",
+			version: "2",
 		},
 		seedOAuthApps() {
 			return [
@@ -1351,5 +1420,5 @@ export {
 	extractMessageBody,
 	type GmailCredentials,
 	stripHtml,
-	toSourceSnapshot,
+	toThreadSnapshot,
 };

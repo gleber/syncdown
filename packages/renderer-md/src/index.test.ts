@@ -134,13 +134,13 @@ function createAppleNotesSnapshot(): SourceSnapshot {
 	};
 }
 
-test("gmail message paths render under account, year, and month folders", () => {
+test("gmail message paths render under account, year, month, and day folders", () => {
 	const renderer = createMarkdownRenderer();
 	const snapshot = createGmailSnapshot();
 	const document = renderer.render(snapshot, getPlugin(snapshot.connectorId));
 
 	expect(document.relativePath).toBe(
-		"gmail/owner-example-com/2026/03/launch-status-update-msg-123.md",
+		"gmail/owner-example-com/2026/03/16/12-launch-status-update-msg-123.md",
 	);
 });
 
@@ -148,7 +148,7 @@ test("renderer exposes connector-specific versions", () => {
 	const renderer = createMarkdownRenderer();
 
 	expect(renderer.getVersion(getPlugin("notion"))).toBe("1");
-	expect(renderer.getVersion(getPlugin("gmail"))).toBe("1");
+	expect(renderer.getVersion(getPlugin("gmail"))).toBe("2");
 	expect(renderer.getVersion(getPlugin("google-calendar"))).toBe("1");
 	expect(renderer.getVersion(getPlugin("apple-notes"))).toBe("1");
 });
@@ -223,7 +223,7 @@ test("gmail account path segments are slugified from the raw email", () => {
 	const document = renderer.render(snapshot, getPlugin(snapshot.connectorId));
 
 	expect(document.relativePath).toBe(
-		"gmail/user-name-alias-example-com/2026/03/launch-status-update-msg-123.md",
+		"gmail/user-name-alias-example-com/2026/03/16/12-launch-status-update-msg-123.md",
 	);
 });
 

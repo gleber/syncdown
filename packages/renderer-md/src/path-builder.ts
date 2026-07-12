@@ -95,41 +95,47 @@ function truncateUtf8(input: string, maxBytes: number): string {
 	return utf8Decoder.decode(bytes.subarray(0, end));
 }
 
-function buildFileName(document: SourceSnapshot): string {
+function buildFileName(document: SourceSnapshot, prefix = ""): string {
 	const identifier = getFileIdentifier(document);
 	const suffix = `-${identifier}.md`;
 	const rawSlug = document.slug || slugifySegment(document.title);
-	const suffixBytes = utf8Encoder.encode(suffix).length;
-	const maxSlugBytes = Math.max(0, MAX_FILENAME_LENGTH - suffixBytes);
+	const reservedBytes =
+		utf8Encoder.encode(suffix).length + utf8Encoder.encode(prefix).length;
+	const maxSlugBytes = Math.max(0, MAX_FILENAME_LENGTH - reservedBytes);
 	const truncated = truncateUtf8(rawSlug, maxSlugBytes);
-	const slug =
-		truncated === rawSlug ? rawSlug : truncated.replace(/-+$/, "");
-	return `${slug}${suffix}`;
+	const slug = truncated === rawSlug ? rawSlug : truncated.replace(/-+$/, "");
+	return `${prefix}${slug}${suffix}`;
 }
 
 export function buildRelativePath(document: SourceSnapshot): string {
-	const fileName = buildFileName(document);
 	if (document.pathHint.kind === "message") {
-		const createdAt = document.metadata.createdAt
+		const parsed = document.metadata.createdAt
 			? new Date(document.metadata.createdAt)
 			: null;
-		const year =
-			createdAt && Number.isFinite(createdAt.valueOf())
-				? String(createdAt.getUTCFullYear())
-				: "unknown";
-		const month =
-			createdAt && Number.isFinite(createdAt.valueOf())
-				? String(createdAt.getUTCMonth() + 1).padStart(2, "0")
-				: "unknown";
+		const createdAt =
+			parsed && Number.isFinite(parsed.valueOf()) ? parsed : null;
+		const year = createdAt ? String(createdAt.getUTCFullYear()) : "unknown";
+		const month = createdAt
+			? String(createdAt.getUTCMonth() + 1).padStart(2, "0")
+			: "unknown";
+		const day = createdAt
+			? String(createdAt.getUTCDate()).padStart(2, "0")
+			: "unknown";
+		const hourPrefix = createdAt
+			? `${String(createdAt.getUTCHours()).padStart(2, "0")}-`
+			: "";
 
 		return path.join(
 			document.connectorId,
 			getGmailAccountSegment(document),
 			year,
 			month,
-			fileName,
+			day,
+			buildFileName(document, hourPrefix),
 		);
 	}
+
+	const fileName = buildFileName(document);
 
 	if (document.pathHint.kind === "calendar-event") {
 		const bucketDate = getCalendarBucketDate(document);

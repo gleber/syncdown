@@ -258,6 +258,8 @@ export interface SourceMetadata extends Record<string, unknown> {
 	gmailTo?: string[];
 	gmailCc?: string[];
 	gmailSnippet?: string;
+	gmailMessageCount?: number;
+	gmailParticipants?: string[];
 	calendarId?: string;
 	calendarName?: string;
 	calendarEventId?: string;
@@ -484,7 +486,7 @@ export interface DocumentSink {
 		outputDir: string,
 		integrationId: string,
 		stateRecords: SourceRecord[],
-		stateSnapshots: Map<string, StoredSourceSnapshot>
+		stateSnapshots: Map<string, StoredSourceSnapshot>,
 	): Promise<LocalStateModifications>;
 }
 
@@ -589,7 +591,7 @@ export interface IntegrationRuntimeProgress {
 	detail: string | null;
 	completed: number | null;
 	total: number | null;
-	unit: "pages" | "messages" | "items" | "events";
+	unit: "pages" | "messages" | "threads" | "items" | "events";
 }
 
 export interface IntegrationRuntimeSnapshot {

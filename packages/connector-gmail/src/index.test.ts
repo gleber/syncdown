@@ -25,6 +25,7 @@ import {
 	type GmailHistoryResult,
 	type GmailMessage,
 	type GmailProfile,
+	type GmailThread,
 	stripHtml,
 } from "./index.js";
 
@@ -237,6 +238,14 @@ function createMessage(
 	};
 }
 
+function createThread(threadId: string, messages: GmailMessage[]): GmailThread {
+	return {
+		id: threadId,
+		historyId: "200",
+		messages: messages.map((message) => ({ ...message, threadId })),
+	};
+}
+
 function createAdapter(overrides: Partial<GmailAdapter> = {}): GmailAdapter {
 	return {
 		async validate(): Promise<void> {},
@@ -246,11 +255,17 @@ function createAdapter(overrides: Partial<GmailAdapter> = {}): GmailAdapter {
 				emailAddress: "owner@example.com",
 			};
 		},
-		async listInboxMessageIds(): Promise<string[]> {
+		async listInboxThreadIds(): Promise<string[]> {
 			return [];
 		},
 		async listHistory(): Promise<GmailHistoryResult> {
 			return { history: [] };
+		},
+		async getThread(
+			_credentials,
+			threadId: string,
+		): Promise<GmailThread | null> {
+			return createThread(threadId, [createMessage(`${threadId}-m1`)]);
 		},
 		async getMessage(
 			_credentials,
@@ -349,46 +364,48 @@ test("default adapter validates credentials with fetch-based Gmail API calls", a
 	);
 });
 
-test("initial inbox sync persists one snapshot per message and stores next history id", async () => {
+test("initial inbox sync persists one snapshot per thread and stores next history id", async () => {
 	const persisted: SourceSnapshot[] = [];
 	let requestedFilter: string | undefined;
 	const writes: string[] = [];
-	const connector = createGmailConnector({
-		adapter: createAdapter({
-			async listInboxMessageIds(_credentials, syncFilter): Promise<string[]> {
-				requestedFilter = syncFilter;
-				return ["m1", "m2"];
-			},
-		}),
+	const adapter = createAdapter({
+		async listInboxThreadIds(_credentials, syncFilter): Promise<string[]> {
+			requestedFilter = syncFilter;
+			return ["t1", "t2"];
+		},
 	});
+	const connector = createGmailConnector({ adapter });
 
 	const result = await connector.sync(
-		createRequest(
-			createAdapter({
-				async listInboxMessageIds(_credentials, syncFilter): Promise<string[]> {
-					requestedFilter = syncFilter;
-					return ["m1", "m2"];
+		createRequest(adapter, {
+			io: {
+				write(line) {
+					writes.push(line);
 				},
-			}),
-			{
-				io: {
-					write(line) {
-						writes.push(line);
-					},
-					error() {},
-				},
-				persistSource: async (source) => {
-					persisted.push(source);
-				},
+				error() {},
 			},
-		),
+			persistSource: async (source) => {
+				persisted.push(source);
+			},
+		}),
 	);
 
 	expect(result.nextCursor).toBe(
-		JSON.stringify({ historyId: "300", syncFilter: "primary" }),
+		JSON.stringify({
+			historyId: "300",
+			syncFilter: "primary",
+			grouping: "thread",
+		}),
 	);
 	expect(requestedFilter).toBe("primary");
-	expect(persisted.map((source) => source.sourceId)).toEqual(["m1", "m2"]);
+	expect(persisted.map((source) => source.sourceId).sort()).toEqual([
+		"t1",
+		"t2",
+	]);
+	expect(persisted.map((source) => source.entityType)).toEqual([
+		"thread",
+		"thread",
+	]);
 	expect(persisted.map((source) => source.metadata.gmailAccountEmail)).toEqual([
 		"owner@example.com",
 		"owner@example.com",
@@ -402,14 +419,143 @@ test("initial inbox sync persists one snapshot per message and stores next histo
 	);
 });
 
+test("thread snapshots merge messages chronologically into one body", async () => {
+	const persisted: SourceSnapshot[] = [];
+	const older = createMessage("m-old", {
+		internalDate: String(Date.parse("2026-03-15T08:00:00.000Z")),
+		snippet: "older snippet",
+		payload: {
+			headers: [
+				{ name: "Subject", value: "Trip plan" },
+				{ name: "From", value: "Ada <ada@example.com>" },
+				{ name: "To", value: "Bob <bob@example.com>" },
+			],
+			parts: [
+				{ mimeType: "text/plain", body: { data: encode("First message") } },
+			],
+		},
+	});
+	const newer = createMessage("m-new", {
+		internalDate: String(Date.parse("2026-03-16T09:30:00.000Z")),
+		snippet: "latest snippet",
+		payload: {
+			headers: [
+				{ name: "Subject", value: "Re: Trip plan" },
+				{ name: "From", value: "Bob <bob@example.com>" },
+			],
+			parts: [
+				{ mimeType: "text/plain", body: { data: encode("Second message") } },
+			],
+		},
+	});
+	const adapter = createAdapter({
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t1"];
+		},
+		async getThread(): Promise<GmailThread | null> {
+			// Return out of order to verify sorting.
+			return createThread("t1", [newer, older]);
+		},
+	});
+	const connector = createGmailConnector({ adapter });
+
+	await connector.sync(
+		createRequest(adapter, {
+			persistSource: async (source) => {
+				persisted.push(source);
+			},
+		}),
+	);
+
+	expect(persisted).toHaveLength(1);
+	const snapshot = persisted[0]!;
+	expect(snapshot.sourceId).toBe("t1");
+	expect(snapshot.title).toBe("Trip plan");
+	expect(snapshot.metadata.createdAt).toBe("2026-03-15T08:00:00.000Z");
+	expect(snapshot.metadata.updatedAt).toBe("2026-03-16T09:30:00.000Z");
+	expect(snapshot.metadata.gmailMessageCount).toBe(2);
+	expect(snapshot.metadata.gmailParticipants).toEqual([
+		"Ada <ada@example.com>",
+		"Bob <bob@example.com>",
+	]);
+	expect(snapshot.metadata.gmailSnippet).toBe("latest snippet");
+	expect(snapshot.metadata.sourceUrl).toBe(
+		"https://mail.google.com/mail/u/0/#inbox/t1",
+	);
+	const firstIndex = snapshot.bodyMd.indexOf("First message");
+	const secondIndex = snapshot.bodyMd.indexOf("Second message");
+	expect(firstIndex).toBeGreaterThanOrEqual(0);
+	expect(secondIndex).toBeGreaterThan(firstIndex);
+	expect(snapshot.bodyMd).toContain(
+		"## Ada <ada@example.com> — 2026-03-15T08:00:00.000Z",
+	);
+	expect(snapshot.bodyMd).toContain(
+		"## Bob <bob@example.com> — 2026-03-16T09:30:00.000Z",
+	);
+	expect(snapshot.bodyMd).toContain("\n\n---\n\n");
+});
+
+test("threads with only ineligible messages are deleted, mixed threads keep eligible messages", async () => {
+	const persisted: SourceSnapshot[] = [];
+	const deleted: string[] = [];
+	const writes: string[] = [];
+	const adapter = createAdapter({
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t-mixed", "t-archived"];
+		},
+		async getThread(
+			_credentials,
+			threadId: string,
+		): Promise<GmailThread | null> {
+			if (threadId === "t-mixed") {
+				return createThread("t-mixed", [
+					createMessage("m1"),
+					createMessage("m2", { labelIds: ["CATEGORY_UPDATES"] }),
+				]);
+			}
+			return createThread("t-archived", [
+				createMessage("m3", { labelIds: ["CATEGORY_UPDATES"] }),
+			]);
+		},
+	});
+	const connector = createGmailConnector({ adapter });
+
+	await connector.sync(
+		createRequest(adapter, {
+			persistSource: async (source) => {
+				persisted.push(source);
+			},
+			deleteSource: async (sourceId) => {
+				deleted.push(sourceId);
+			},
+			io: {
+				write(line) {
+					writes.push(line);
+				},
+				error() {},
+			},
+		}),
+	);
+
+	expect(persisted).toHaveLength(1);
+	expect(persisted[0]?.sourceId).toBe("t-mixed");
+	expect(persisted[0]?.metadata.gmailMessageCount).toBe(1);
+	expect(persisted[0]?.bodyMd).toContain("Body m1");
+	expect(persisted[0]?.bodyMd).not.toContain("Body m2");
+	expect(deleted).toEqual(["t-archived"]);
+	expect(writes).toContain(
+		"Gmail thread removed from the active primary filter during sync: t-archived",
+	);
+});
+
 test("gmail sync falls back to the configured connection email when profile email is missing", async () => {
 	const persisted: SourceSnapshot[] = [];
 	const adapter = createAdapter({
 		async getProfile(): Promise<GmailProfile> {
 			return { historyId: "300" };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
-			return ["m1"];
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t1"];
 		},
 	});
 	const request = createRequest(adapter, {
@@ -429,7 +575,7 @@ test("gmail sync falls back to the configured connection email when profile emai
 	expect(persisted[0]?.pathHint.gmailAccountEmail).toBe("fallback@example.com");
 });
 
-test("incremental history sync refetches only changed messages", async () => {
+test("incremental history sync refetches only changed threads", async () => {
 	const requested: string[] = [];
 	const persisted: string[] = [];
 	const writes: string[] = [];
@@ -438,25 +584,29 @@ test("incremental history sync refetches only changed messages", async () => {
 			return {
 				history: [
 					{
-						messagesAdded: [{ message: { id: "m1" } }],
-						labelsRemoved: [{ message: { id: "m2" } }],
+						messagesAdded: [{ message: { id: "m1", threadId: "t1" } }],
+						labelsRemoved: [{ message: { id: "m2", threadId: "t2" } }],
 					},
 				],
 			};
 		},
-		async getMessage(
+		async getThread(
 			_credentials,
-			messageId: string,
-		): Promise<GmailMessage | null> {
-			requested.push(messageId);
-			return createMessage(messageId);
+			threadId: string,
+		): Promise<GmailThread | null> {
+			requested.push(threadId);
+			return createThread(threadId, [createMessage(`${threadId}-m1`)]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
 
 	await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "primary" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "primary",
+				grouping: "thread",
+			}),
 			io: {
 				write(line) {
 					writes.push(line);
@@ -469,9 +619,51 @@ test("incremental history sync refetches only changed messages", async () => {
 		}),
 	);
 
-	expect(requested).toEqual(["m1", "m2"]);
-	expect(persisted).toEqual(["m1", "m2"]);
-	expect(writes).toContain("Gmail progress: messages=2 concurrency=10");
+	expect(requested.sort()).toEqual(["t1", "t2"]);
+	expect(persisted.sort()).toEqual(["t1", "t2"]);
+	expect(writes).toContain("Gmail progress: threads=2 concurrency=10");
+});
+
+test("incremental history resolves thread ids via getMessage when history omits them", async () => {
+	const persisted: string[] = [];
+	const messageLookups: string[] = [];
+	const adapter = createAdapter({
+		async listHistory(): Promise<GmailHistoryResult> {
+			return {
+				history: [{ messagesAdded: [{ message: { id: "m1" } }] }],
+			};
+		},
+		async getMessage(
+			_credentials,
+			messageId: string,
+		): Promise<GmailMessage | null> {
+			messageLookups.push(messageId);
+			return createMessage(messageId, { threadId: "t9" });
+		},
+		async getThread(
+			_credentials,
+			threadId: string,
+		): Promise<GmailThread | null> {
+			return createThread(threadId, [createMessage(`${threadId}-m1`)]);
+		},
+	});
+	const connector = createGmailConnector({ adapter });
+
+	await connector.sync(
+		createRequest(adapter, {
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "primary",
+				grouping: "thread",
+			}),
+			persistSource: async (source) => {
+				persisted.push(source.sourceId);
+			},
+		}),
+	);
+
+	expect(messageLookups).toEqual(["m1"]);
+	expect(persisted).toEqual(["t9"]);
 });
 
 test("incremental history sync publishes structured determinate progress", async () => {
@@ -481,24 +673,22 @@ test("incremental history sync publishes structured determinate progress", async
 			return {
 				history: [
 					{
-						messagesAdded: [{ message: { id: "m1" } }],
-						labelsRemoved: [{ message: { id: "m2" } }],
+						messagesAdded: [{ message: { id: "m1", threadId: "t1" } }],
+						labelsRemoved: [{ message: { id: "m2", threadId: "t2" } }],
 					},
 				],
 			};
-		},
-		async getMessage(
-			_credentials,
-			messageId: string,
-		): Promise<GmailMessage | null> {
-			return createMessage(messageId);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
 
 	await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "primary" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "primary",
+				grouping: "thread",
+			}),
 			setProgress(progress) {
 				progressUpdates.push(progress ? { ...progress } : null);
 			},
@@ -511,24 +701,24 @@ test("incremental history sync publishes structured determinate progress", async
 		detail: null,
 		completed: null,
 		total: null,
-		unit: "messages",
+		unit: "threads",
 	});
 	expect(progressUpdates).toContainEqual({
 		mode: "determinate",
-		phase: "Fetching changed messages",
+		phase: "Fetching changed threads",
 		detail: "processed 2 of 2 | concurrency 10",
 		completed: 2,
 		total: 2,
-		unit: "messages",
+		unit: "threads",
 	});
 });
 
 test("initial inbox sync scans the full filtered inbox", async () => {
 	let requestedFilter: string | undefined;
 	const adapter = createAdapter({
-		async listInboxMessageIds(_credentials, syncFilter): Promise<string[]> {
+		async listInboxThreadIds(_credentials, syncFilter): Promise<string[]> {
 			requestedFilter = syncFilter;
-			return ["m1"];
+			return ["t1"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -537,7 +727,7 @@ test("initial inbox sync scans the full filtered inbox", async () => {
 	expect(requestedFilter).toBe("primary");
 });
 
-test("message fetches honor configured concurrency", async () => {
+test("thread fetches honor configured concurrency", async () => {
 	let active = 0;
 	let peak = 0;
 	let releaseCurrentBatch!: () => void;
@@ -550,13 +740,13 @@ test("message fetches honor configured concurrency", async () => {
 	});
 
 	const adapter = createAdapter({
-		async listInboxMessageIds(): Promise<string[]> {
-			return ["m1", "m2", "m3", "m4"];
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t1", "t2", "t3", "t4"];
 		},
-		async getMessage(
+		async getThread(
 			_credentials,
-			messageId: string,
-		): Promise<GmailMessage | null> {
+			threadId: string,
+		): Promise<GmailThread | null> {
 			active += 1;
 			peak = Math.max(peak, active);
 			if (active === 2) {
@@ -564,7 +754,7 @@ test("message fetches honor configured concurrency", async () => {
 			}
 			await currentBatch;
 			active -= 1;
-			return createMessage(messageId);
+			return createThread(threadId, [createMessage(`${threadId}-m1`)]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -583,7 +773,7 @@ test("message fetches honor configured concurrency", async () => {
 	expect(peak).toBe(2);
 });
 
-test("initial inbox sync persists completed messages without waiting for slower fetches", async () => {
+test("initial inbox sync persists completed threads without waiting for slower fetches", async () => {
 	const persisted: string[] = [];
 	let releaseSlowFetch!: () => void;
 	let markFastPersisted!: () => void;
@@ -595,25 +785,25 @@ test("initial inbox sync persists completed messages without waiting for slower 
 	});
 
 	const adapter = createAdapter({
-		async *iterateInboxMessageIds(): AsyncIterable<string> {
-			yield "m1";
-			yield "m2";
+		async *iterateInboxThreadIds(): AsyncIterable<string> {
+			yield "t1";
+			yield "t2";
 		},
-		async getMessage(
+		async getThread(
 			_credentials,
-			messageId: string,
-		): Promise<GmailMessage | null> {
-			if (messageId === "m2") {
+			threadId: string,
+		): Promise<GmailThread | null> {
+			if (threadId === "t2") {
 				await slowFetch;
 			}
-			return createMessage(messageId);
+			return createThread(threadId, [createMessage(`${threadId}-m1`)]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
 	const request = createRequest(adapter, {
 		persistSource: async (source) => {
 			persisted.push(source.sourceId);
-			if (source.sourceId === "m1") {
+			if (source.sourceId === "t1") {
 				markFastPersisted();
 			}
 		},
@@ -629,13 +819,13 @@ test("initial inbox sync persists completed messages without waiting for slower 
 	});
 
 	await fastPersisted;
-	expect(persisted).toEqual(["m1"]);
+	expect(persisted).toEqual(["t1"]);
 	expect(completed).toBe(false);
 
 	releaseSlowFetch();
 	await syncPromise;
 
-	expect(persisted).toEqual(["m1", "m2"]);
+	expect(persisted).toEqual(["t1", "t2"]);
 	expect(completed).toBe(true);
 });
 
@@ -649,9 +839,9 @@ test("invalid history id falls back to a full scoped rescan", async () => {
 			historyCalls += 1;
 			return { history: [], invalidCursor: true };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
+		async listInboxThreadIds(): Promise<string[]> {
 			inboxCalls += 1;
-			return ["m3"];
+			return ["t3"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -661,6 +851,7 @@ test("invalid history id falls back to a full scoped rescan", async () => {
 			since: JSON.stringify({
 				historyId: "stale-history",
 				syncFilter: "primary",
+				grouping: "thread",
 			}),
 			io: {
 				write(line) {
@@ -676,7 +867,7 @@ test("invalid history id falls back to a full scoped rescan", async () => {
 
 	expect(historyCalls).toBe(1);
 	expect(inboxCalls).toBe(1);
-	expect(persisted).toEqual(["m3"]);
+	expect(persisted).toEqual(["t3"]);
 	expect(writes).toContain(
 		"Gmail history cursor expired. Falling back to a full scoped rescan.",
 	);
@@ -691,8 +882,8 @@ test("history fallback publishes structured scanning progress", async () => {
 		async listHistory(): Promise<GmailHistoryResult> {
 			return { history: [], invalidCursor: true };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
-			return ["m3"];
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t3"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -702,6 +893,7 @@ test("history fallback publishes structured scanning progress", async () => {
 			since: JSON.stringify({
 				historyId: "stale-history",
 				syncFilter: "primary",
+				grouping: "thread",
 			}),
 			setProgress(progress) {
 				progressUpdates.push(progress ? { ...progress } : null);
@@ -715,7 +907,7 @@ test("history fallback publishes structured scanning progress", async () => {
 		detail: null,
 		completed: null,
 		total: null,
-		unit: "messages",
+		unit: "threads",
 	});
 	expect(progressUpdates).toContainEqual({
 		mode: "indeterminate",
@@ -723,7 +915,7 @@ test("history fallback publishes structured scanning progress", async () => {
 		detail: "processed 1 | concurrency 10",
 		completed: null,
 		total: null,
-		unit: "messages",
+		unit: "threads",
 	});
 });
 
@@ -737,9 +929,9 @@ test("legacy gmail cursor resets integration state before a scoped resync", asyn
 			historyCalls += 1;
 			return { history: [] };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
+		async listInboxThreadIds(): Promise<string[]> {
 			inboxCalls += 1;
-			return ["m1"];
+			return ["t1"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -767,6 +959,30 @@ test("legacy gmail cursor resets integration state before a scoped resync", asyn
 	);
 });
 
+test("per-message cursors without thread grouping reset integration state", async () => {
+	let resetCalls = 0;
+	let inboxCalls = 0;
+	const adapter = createAdapter({
+		async listInboxThreadIds(): Promise<string[]> {
+			inboxCalls += 1;
+			return [];
+		},
+	});
+	const connector = createGmailConnector({ adapter });
+
+	await connector.sync(
+		createRequest(adapter, {
+			since: JSON.stringify({ historyId: "250", syncFilter: "primary" }),
+			resetIntegrationState: async () => {
+				resetCalls += 1;
+			},
+		}),
+	);
+
+	expect(resetCalls).toBe(1);
+	expect(inboxCalls).toBe(1);
+});
+
 test("gmail sync filter changes reset integration state before a scoped resync", async () => {
 	let historyCalls = 0;
 	let inboxCalls = 0;
@@ -777,9 +993,9 @@ test("gmail sync filter changes reset integration state before a scoped resync",
 			historyCalls += 1;
 			return { history: [] };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
+		async listInboxThreadIds(): Promise<string[]> {
 			inboxCalls += 1;
-			return ["m1"];
+			return ["t1"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -789,6 +1005,7 @@ test("gmail sync filter changes reset integration state before a scoped resync",
 			since: JSON.stringify({
 				historyId: "250",
 				syncFilter: "primary-important",
+				grouping: "thread",
 			}),
 			syncFilter: "primary",
 			resetIntegrationState: async () => {
@@ -811,27 +1028,33 @@ test("gmail sync filter changes reset integration state before a scoped resync",
 	);
 });
 
-test("messages removed from the active filter delete local files instead of persisting archived state", async () => {
+test("threads removed from the active filter delete local files instead of persisting archived state", async () => {
 	const persisted: SourceSnapshot[] = [];
 	const deleted: string[] = [];
 	const writes: string[] = [];
 	const adapter = createAdapter({
 		async listHistory(): Promise<GmailHistoryResult> {
 			return {
-				history: [{ labelsRemoved: [{ message: { id: "m4" } }] }],
+				history: [
+					{ labelsRemoved: [{ message: { id: "m4", threadId: "t4" } }] },
+				],
 			};
 		},
-		async getMessage(): Promise<GmailMessage | null> {
-			return createMessage("m4", {
-				labelIds: ["CATEGORY_UPDATES"],
-			});
+		async getThread(): Promise<GmailThread | null> {
+			return createThread("t4", [
+				createMessage("m4", { labelIds: ["CATEGORY_UPDATES"] }),
+			]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
 
 	await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "primary" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "primary",
+				grouping: "thread",
+			}),
 			persistSource: async (source) => {
 				persisted.push(source);
 			},
@@ -848,22 +1071,24 @@ test("messages removed from the active filter delete local files instead of pers
 	);
 
 	expect(persisted).toEqual([]);
-	expect(deleted).toEqual(["m4"]);
+	expect(deleted).toEqual(["t4"]);
 	expect(writes).toContain(
-		"Gmail message removed from the active primary filter during sync: m4",
+		"Gmail thread removed from the active primary filter during sync: t4",
 	);
 });
 
-test("hard-deleted messages remove local files and do not fail sync", async () => {
+test("hard-deleted threads remove local files and do not fail sync", async () => {
 	const writes: string[] = [];
 	const deleted: string[] = [];
 	const adapter = createAdapter({
 		async listHistory(): Promise<GmailHistoryResult> {
 			return {
-				history: [{ messagesDeleted: [{ message: { id: "m5" } }] }],
+				history: [
+					{ messagesDeleted: [{ message: { id: "m5", threadId: "t5" } }] },
+				],
 			};
 		},
-		async getMessage(): Promise<GmailMessage | null> {
+		async getThread(): Promise<GmailThread | null> {
 			return null;
 		},
 	});
@@ -871,7 +1096,11 @@ test("hard-deleted messages remove local files and do not fail sync", async () =
 
 	const result = await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "primary" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "primary",
+				grouping: "thread",
+			}),
 			deleteSource: async (sourceId) => {
 				deleted.push(sourceId);
 			},
@@ -885,30 +1114,38 @@ test("hard-deleted messages remove local files and do not fail sync", async () =
 	);
 
 	expect(result.nextCursor).toBe(
-		JSON.stringify({ historyId: "300", syncFilter: "primary" }),
+		JSON.stringify({
+			historyId: "300",
+			syncFilter: "primary",
+			grouping: "thread",
+		}),
 	);
-	expect(deleted).toEqual(["m5"]);
-	expect(writes).toContain("Gmail message deleted during sync: m5");
+	expect(deleted).toEqual(["t5"]);
+	expect(writes).toContain("Gmail thread deleted during sync: t5");
 });
 
-test("primary-important sync only persists messages with the IMPORTANT label", async () => {
+test("primary-important sync only persists threads with the IMPORTANT label", async () => {
 	const persisted: string[] = [];
 	const deleted: string[] = [];
 	let requestedFilter: string | undefined;
 	const adapter = createAdapter({
-		async listInboxMessageIds(_credentials, syncFilter): Promise<string[]> {
+		async listInboxThreadIds(_credentials, syncFilter): Promise<string[]> {
 			requestedFilter = syncFilter;
-			return ["m1", "m2"];
+			return ["t1", "t2"];
 		},
-		async getMessage(
+		async getThread(
 			_credentials,
-			messageId: string,
-		): Promise<GmailMessage | null> {
-			return messageId === "m1"
-				? createMessage("m1", {
-						labelIds: ["INBOX", "CATEGORY_PERSONAL", "IMPORTANT"],
-					})
-				: createMessage("m2", { labelIds: ["INBOX", "CATEGORY_PERSONAL"] });
+			threadId: string,
+		): Promise<GmailThread | null> {
+			return threadId === "t1"
+				? createThread("t1", [
+						createMessage("m1", {
+							labelIds: ["INBOX", "CATEGORY_PERSONAL", "IMPORTANT"],
+						}),
+					])
+				: createThread("t2", [
+						createMessage("m2", { labelIds: ["INBOX", "CATEGORY_PERSONAL"] }),
+					]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -926,8 +1163,8 @@ test("primary-important sync only persists messages with the IMPORTANT label", a
 	);
 
 	expect(requestedFilter).toBe("primary-important");
-	expect(persisted).toEqual(["m1"]);
-	expect(deleted).toEqual(["m2"]);
+	expect(persisted).toEqual(["t1"]);
+	expect(deleted).toEqual(["t2"]);
 });
 
 test("body extraction prefers text plain and falls back to stripped html", () => {
@@ -971,12 +1208,12 @@ test("html stripping handles common markup cleanup", () => {
 	);
 });
 
-test("inbox sync filter passes syncFilter=inbox to listInboxMessageIds", async () => {
+test("inbox sync filter passes syncFilter=inbox to listInboxThreadIds", async () => {
 	let requestedFilter: string | undefined;
 	const adapter = createAdapter({
-		async listInboxMessageIds(_credentials, syncFilter): Promise<string[]> {
+		async listInboxThreadIds(_credentials, syncFilter): Promise<string[]> {
 			requestedFilter = syncFilter;
-			return ["m1"];
+			return ["t1"];
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -985,17 +1222,24 @@ test("inbox sync filter passes syncFilter=inbox to listInboxMessageIds", async (
 	expect(requestedFilter).toBe("inbox");
 });
 
-test("inbox sync filter persists messages with INBOX but without CATEGORY_PERSONAL", async () => {
+test("inbox sync filter persists threads with INBOX but without CATEGORY_PERSONAL", async () => {
 	const persisted: string[] = [];
 	const deleted: string[] = [];
 	const adapter = createAdapter({
-		async listInboxMessageIds(): Promise<string[]> {
-			return ["m1", "m2"];
+		async listInboxThreadIds(): Promise<string[]> {
+			return ["t1", "t2"];
 		},
-		async getMessage(_credentials, messageId): Promise<GmailMessage | null> {
-			return messageId === "m1"
-				? createMessage("m1", { labelIds: ["INBOX", "CATEGORY_PROMOTIONS"] })
-				: createMessage("m2", { labelIds: ["INBOX", "CATEGORY_PERSONAL"] });
+		async getThread(
+			_credentials,
+			threadId: string,
+		): Promise<GmailThread | null> {
+			return threadId === "t1"
+				? createThread("t1", [
+						createMessage("m1", { labelIds: ["INBOX", "CATEGORY_PROMOTIONS"] }),
+					])
+				: createThread("t2", [
+						createMessage("m2", { labelIds: ["INBOX", "CATEGORY_PERSONAL"] }),
+					]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
@@ -1012,29 +1256,37 @@ test("inbox sync filter persists messages with INBOX but without CATEGORY_PERSON
 		}),
 	);
 
-	expect(persisted).toEqual(["m1", "m2"]);
+	expect(persisted.sort()).toEqual(["t1", "t2"]);
 	expect(deleted).toEqual([]);
 });
 
-test("inbox sync filter deletes messages without INBOX label", async () => {
+test("inbox sync filter deletes threads without INBOX label", async () => {
 	const persisted: string[] = [];
 	const deleted: string[] = [];
 	const writes: string[] = [];
 	const adapter = createAdapter({
 		async listHistory(): Promise<GmailHistoryResult> {
 			return {
-				history: [{ labelsRemoved: [{ message: { id: "m1" } }] }],
+				history: [
+					{ labelsRemoved: [{ message: { id: "m1", threadId: "t1" } }] },
+				],
 			};
 		},
-		async getMessage(): Promise<GmailMessage | null> {
-			return createMessage("m1", { labelIds: ["CATEGORY_PROMOTIONS"] });
+		async getThread(): Promise<GmailThread | null> {
+			return createThread("t1", [
+				createMessage("m1", { labelIds: ["CATEGORY_PROMOTIONS"] }),
+			]);
 		},
 	});
 	const connector = createGmailConnector({ adapter });
 
 	await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "inbox" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "inbox",
+				grouping: "thread",
+			}),
 			syncFilter: "inbox",
 			persistSource: async (source) => {
 				persisted.push(source.sourceId);
@@ -1052,9 +1304,9 @@ test("inbox sync filter deletes messages without INBOX label", async () => {
 	);
 
 	expect(persisted).toEqual([]);
-	expect(deleted).toEqual(["m1"]);
+	expect(deleted).toEqual(["t1"]);
 	expect(writes).toContain(
-		"Gmail message removed from the active inbox filter during sync: m1",
+		"Gmail thread removed from the active inbox filter during sync: t1",
 	);
 });
 
@@ -1065,7 +1317,7 @@ test("inbox cursor is accepted as valid and not treated as legacy", async () => 
 		async listHistory(): Promise<GmailHistoryResult> {
 			return { history: [] };
 		},
-		async listInboxMessageIds(): Promise<string[]> {
+		async listInboxThreadIds(): Promise<string[]> {
 			inboxCalls += 1;
 			return [];
 		},
@@ -1074,7 +1326,11 @@ test("inbox cursor is accepted as valid and not treated as legacy", async () => 
 
 	await connector.sync(
 		createRequest(adapter, {
-			since: JSON.stringify({ historyId: "250", syncFilter: "inbox" }),
+			since: JSON.stringify({
+				historyId: "250",
+				syncFilter: "inbox",
+				grouping: "thread",
+			}),
 			syncFilter: "inbox",
 			resetIntegrationState: async () => {
 				resetCalls += 1;

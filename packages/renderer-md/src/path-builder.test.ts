@@ -29,8 +29,37 @@ test("buildRelativePath uses unknown buckets for gmail documents without created
 	});
 
 	expect(buildRelativePath(document)).toBe(
-		"gmail/owner-example-com/unknown/unknown/launch-status-update-msg-123.md",
+		"gmail/owner-example-com/unknown/unknown/unknown/launch-status-update-msg-123.md",
 	);
+});
+
+test("buildRelativePath buckets gmail documents per day and prefixes the received hour", () => {
+	const document = createSnapshot({
+		connectorId: "gmail",
+		sourceId: "thread-123",
+		pathHint: { kind: "message", gmailAccountEmail: "Owner@Example.com" },
+		metadata: { createdAt: "2026-03-16T09:34:56.000Z" },
+	});
+
+	expect(buildRelativePath(document)).toBe(
+		"gmail/owner-example-com/2026/03/16/09-launch-status-update-thread-123.md",
+	);
+});
+
+test("buildRelativePath keeps prefixed gmail filenames within 255 bytes", () => {
+	const longTitle = "a".repeat(400);
+	const document = createSnapshot({
+		connectorId: "gmail",
+		sourceId: "thread-456",
+		title: longTitle,
+		pathHint: { kind: "message", gmailAccountEmail: "Owner@Example.com" },
+		metadata: { createdAt: "2026-03-16T23:59:59.000Z" },
+	});
+
+	const fileName = buildRelativePath(document).split("/").at(-1)!;
+	expect(Buffer.byteLength(fileName)).toBeLessThanOrEqual(255);
+	expect(fileName.startsWith("23-")).toBe(true);
+	expect(fileName.endsWith("-thread-456.md")).toBe(true);
 });
 
 test("buildRelativePath uses calendarEventId for filenames and createdAt for calendar buckets", () => {
