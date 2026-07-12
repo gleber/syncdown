@@ -125,6 +125,46 @@ test("buildRelativePath truncates long emoji/CJK titles to keep filename within 
 	expect(fileName.endsWith("-abc123.md")).toBe(true);
 });
 
+test("buildRelativePath truncates multi-byte slugs to keep filename within 255 UTF-8 bytes", () => {
+	// 100 emoji code points = 400 UTF-8 bytes — naive char-count truncation would leave it oversized.
+	const emojiSlug = "🎉".repeat(100);
+	const longEventId =
+		"_60o66p1o6spjebb375hj6b9k6or38bb1c8q32b9kckqj0opmcgsj4opj6t066rrecon74pbjclgn4or8e8n6usj7";
+	const document = createSnapshot({
+		connectorId: "google-calendar",
+		sourceId: `primary:${longEventId}`,
+		entityType: "event",
+		slug: emojiSlug,
+		pathHint: { kind: "calendar-event", calendarName: "Primary Calendar" },
+		metadata: {
+			createdAt: "2026-03-17T07:00:00.000Z",
+			calendarEventId: longEventId,
+		},
+	});
+
+	const fileName = buildRelativePath(document).split("/").at(-1)!;
+	expect(Buffer.byteLength(fileName, "utf8")).toBeLessThanOrEqual(255);
+	expect(fileName.endsWith(`-${longEventId}.md`)).toBe(true);
+});
+
+test("buildRelativePath handles identifier suffix exceeding 255 bytes without throwing", () => {
+	const oversizedId = "x".repeat(300);
+	const document = createSnapshot({
+		connectorId: "google-calendar",
+		sourceId: `primary:${oversizedId}`,
+		entityType: "event",
+		title: "Event",
+		pathHint: { kind: "calendar-event", calendarName: "Primary Calendar" },
+		metadata: {
+			createdAt: "2026-03-17T07:00:00.000Z",
+			calendarEventId: oversizedId,
+		},
+	});
+
+	const fileName = buildRelativePath(document).split("/").at(-1)!;
+	expect(fileName).toBe(`-${oversizedId}.md`);
+});
+
 test("buildRelativePath routes non-database notion pages under pages folders", () => {
 	const document = createSnapshot({
 		connectorId: "notion",
