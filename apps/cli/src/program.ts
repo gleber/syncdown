@@ -17,6 +17,12 @@ import {
 	getConfigSetKeys as getConfigCommandSetKeys,
 	handleConfigCommand,
 } from "./config-commands.js";
+import {
+	type ConnectDependencies,
+	handleCalendarsCommand,
+	handleConnectCommand,
+	handleDisconnectCommand,
+} from "./connect-commands.js";
 import { printOverview } from "./overview.js";
 import {
 	DEFAULT_WATCH_INTERVAL,
@@ -39,9 +45,17 @@ function getHelpLines(): string[] {
 		"Usage:",
 		"  syncdown",
 		"  syncdown status",
+		"  syncdown config show",
+		"  syncdown config get <key>",
 		"  syncdown config set <key> <value>",
 		"  syncdown config set <key> --stdin",
 		"  syncdown config unset <key>",
+		"  syncdown connect google [--connector <ids>] [--enable <ids>] [--no-browser]",
+		"  syncdown connect notion --token <value|--stdin>",
+		"  syncdown connect notion --oauth [--no-browser]",
+		"  syncdown connect todoist --token <value|--stdin>",
+		"  syncdown disconnect <google|notion|todoist>",
+		"  syncdown calendars",
 		"  syncdown run",
 		`  syncdown run --connector <${connectorUsage}>`,
 		"  syncdown run --integration <integration-id>",
@@ -58,8 +72,13 @@ function getHelpLines(): string[] {
 		"  syncdown                    Launch the TUI with settings plus the sync dashboard.",
 		"",
 		"Headless config:",
+		"  syncdown config show        Print the full configuration.",
+		"  syncdown config get ...     Read a single config value.",
 		"  syncdown config set ...     Set config values non-interactively.",
 		"  syncdown config unset ...   Remove config values non-interactively.",
+		"  syncdown connect ...        Run a guided OAuth/token connect flow.",
+		"  syncdown disconnect ...     Delete stored credentials and disable connectors.",
+		"  syncdown calendars          List Google calendars and selection state.",
 		"",
 		"Config keys:",
 		...getConfigSetKeys().map((key) => `  ${key}`),
@@ -91,6 +110,7 @@ interface CliDependencies {
 	secrets?: ReturnType<typeof createSecretsStore>;
 	launchConfig?: typeof launchConfigTui;
 	updater?: SelfUpdater;
+	authService?: ConnectDependencies["authService"];
 }
 
 function printUpdateUsage(io: AppIo): void {
@@ -243,14 +263,24 @@ export async function runCli(
 		case "config": {
 			return handleConfigCommand(io, argv, secrets);
 		}
+		case "connect":
+			return handleConnectCommand(io, argv, secrets, {
+				authService: dependencies.authService,
+			});
+		case "disconnect":
+			return handleDisconnectCommand(io, argv, secrets);
+		case "calendars":
+			return handleCalendarsCommand(io, argv, secrets, {
+				authService: dependencies.authService,
+			});
 		case "status":
 			return printOverview(io, app, {
 				defaultWatchInterval: DEFAULT_WATCH_INTERVAL,
 				interactiveTerminal: isInteractiveTerminal(),
 				secrets,
 			});
-			case "run":
-			case "push": {
+		case "run":
+		case "push": {
 			const runOptions = parseRunOptions(argv.slice(3), io);
 			if (!runOptions) {
 				return EXIT_CODES.CONFIG_ERROR;

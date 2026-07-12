@@ -24,6 +24,16 @@ import {
 import { ConfigTuiApp } from "./app.js";
 import { createDraftState } from "./state.js";
 
+export {
+	type BrowserOpenResult,
+	type CreateTuiAuthServiceOptions,
+	createTuiAuthService,
+	type GoogleAuthCredentials,
+	type GoogleAuthSession,
+	type NotionOAuthSession,
+	type TuiAuthService,
+} from "./auth.js";
+
 const DEV_DOCS_BASE_URL = "http://localhost:3000";
 const PROD_DOCS_BASE_URL = "https://syncdown.dev";
 

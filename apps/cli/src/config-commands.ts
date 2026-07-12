@@ -13,7 +13,9 @@ import {
 } from "@syncdown/core";
 import { createSecretsStore } from "@syncdown/secrets";
 
-async function readValueFromStdin(): Promise<string> {
+import { handleConfigGet, handleConfigShow } from "./config-inspect.js";
+
+export async function readValueFromStdin(): Promise<string> {
 	const chunks: Buffer[] = [];
 	for await (const chunk of process.stdin) {
 		chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
@@ -21,7 +23,7 @@ async function readValueFromStdin(): Promise<string> {
 	return Buffer.concat(chunks).toString("utf8").trim();
 }
 
-async function loadConfig(): Promise<{
+export async function loadConfig(): Promise<{
 	config: SyncdownConfig;
 	paths: ReturnType<typeof resolveAppPaths>;
 }> {
@@ -56,6 +58,8 @@ function printConfigUnsetUsage(io: AppIo): void {
 export function printConfigHelp(io: AppIo): void {
 	for (const line of [
 		"Usage:",
+		"  syncdown config show",
+		"  syncdown config get <key>",
 		"  syncdown config set <key> <value>",
 		"  syncdown config set <key> --stdin",
 		"  syncdown config unset <key>",
@@ -194,6 +198,14 @@ export async function handleConfigCommand(
 	}
 	if (subcommand === "unset") {
 		return handleConfigUnset(io, argv, secrets);
+	}
+	if (subcommand === "show") {
+		const { config, paths } = await loadConfig();
+		return handleConfigShow(io, { config, paths, secrets });
+	}
+	if (subcommand === "get") {
+		const { config, paths } = await loadConfig();
+		return handleConfigGet(io, argv[4], { config, paths, secrets });
 	}
 
 	printConfigHelp(io);
