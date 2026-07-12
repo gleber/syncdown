@@ -13,11 +13,18 @@ test("createBuiltinConnectorPlugins respects platform support", () => {
 		"gmail",
 		"google-calendar",
 		"google-contacts",
+		"todoist",
 		"apple-notes",
 	]);
 	expect(
 		createBuiltinConnectorPlugins("linux").map((plugin) => plugin.id),
-	).toEqual(["notion", "gmail", "google-calendar", "google-contacts"]);
+	).toEqual([
+		"notion",
+		"gmail",
+		"google-calendar",
+		"google-contacts",
+		"todoist",
+	]);
 });
 
 test("createConnectorAliasMap exposes built-in config aliases", () => {

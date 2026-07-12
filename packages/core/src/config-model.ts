@@ -25,6 +25,7 @@ export const DEFAULT_NOTION_OAUTH_APP_ID = "notion-oauth-app-default";
 export const DEFAULT_NOTION_TOKEN_CONNECTION_ID = "notion-token-default";
 export const DEFAULT_NOTION_OAUTH_CONNECTION_ID = "notion-oauth-default";
 export const DEFAULT_APPLE_NOTES_CONNECTION_ID = "apple-notes-local-default";
+export const DEFAULT_TODOIST_CONNECTION_ID = "todoist-token-default";
 
 function getFallbackOAuthApps(): OAuthAppConfig[] {
 	return [

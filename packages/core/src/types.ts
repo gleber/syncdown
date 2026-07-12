@@ -112,6 +112,10 @@ export interface NotionOAuthConnectionConfig extends BaseConnectionConfig {
 	ownerUserName?: string;
 }
 
+export interface TodoistTokenConnectionConfig extends BaseConnectionConfig {
+	kind: "todoist-token";
+}
+
 export interface AppleNotesLocalConnectionConfig extends BaseConnectionConfig {
 	kind: "apple-notes-local";
 }
@@ -124,7 +128,8 @@ export type ConnectionConfig =
 	| GoogleAccountConnectionConfig
 	| NotionTokenConnectionConfig
 	| NotionOAuthConnectionConfig
-	| AppleNotesLocalConnectionConfig;
+	| AppleNotesLocalConnectionConfig
+	| TodoistTokenConnectionConfig;
 
 export type GmailSyncFilter = "primary" | "primary-important" | "inbox";
 
@@ -175,12 +180,23 @@ export type ContactsIntegrationConfig = BaseIntegrationConfig<
 export interface GenericIntegrationConfig
 	extends BaseIntegrationConfig<string, Record<string, unknown>> {}
 
+export interface TodoistIntegrationSettings {
+	syncMode?: "two-way" | "up" | "down" | "dry";
+	syncCompletedMonths?: number;
+}
+
+export type TodoistIntegrationConfig = BaseIntegrationConfig<
+	"todoist",
+	TodoistIntegrationSettings
+>;
+
 export type IntegrationConfig =
 	| NotionIntegrationConfig
 	| GmailIntegrationConfig
 	| CalendarIntegrationConfig
 	| AppleNotesIntegrationConfig
-	| ContactsIntegrationConfig;
+	| ContactsIntegrationConfig
+	| TodoistIntegrationConfig;
 
 export interface SyncdownConfig {
 	outputDir?: string;
@@ -210,7 +226,14 @@ export interface HealthCheck {
 }
 
 export interface DocumentPathHint {
-	kind: "page" | "database" | "message" | "calendar-event" | "note" | "contact";
+	kind:
+		| "page"
+		| "database"
+		| "message"
+		| "calendar-event"
+		| "note"
+		| "contact"
+		| "todoist-tasks";
 	databaseName?: string;
 	gmailAccountEmail?: string;
 	calendarName?: string;

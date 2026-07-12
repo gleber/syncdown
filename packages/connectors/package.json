@@ -18,6 +18,7 @@
 		"@syncdown/connector-google-calendar": "workspace:*",
 		"@syncdown/connector-google-contacts": "workspace:*",
 		"@syncdown/connector-notion": "workspace:*",
+		"@syncdown/connector-todoist": "workspace:*",
 		"@syncdown/core": "workspace:*"
 	}
 }
