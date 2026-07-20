@@ -378,7 +378,17 @@ class OfficialGoogleContactsAdapter implements GoogleContactsAdapter {
 				typeof entry.value === "string",
 		);
 		const fallback = emails.find((entry) => typeof entry.value === "string");
-		return primary?.value ?? fallback?.value ?? null;
+		// Allow overriding the resolved account identity: People API people/me can
+		// report a workspace-primary alias (e.g. a hosted-domain address) rather than
+		// the mailbox the user actually syncs, which then drives the output directory
+		// name. SYNCDOWN_CONTACTS_ACCOUNT_EMAIL pins it to the intended address.
+		const override = process.env.SYNCDOWN_CONTACTS_ACCOUNT_EMAIL?.trim();
+		return (
+			(override && override.length > 0 ? override : undefined) ??
+			primary?.value ??
+			fallback?.value ??
+			null
+		);
 	}
 }
 
