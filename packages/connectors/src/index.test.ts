@@ -14,6 +14,7 @@ test("createBuiltinConnectorPlugins respects platform support", () => {
 		"google-calendar",
 		"google-contacts",
 		"todoist",
+		"google-keep",
 		"apple-notes",
 	]);
 	expect(
@@ -24,6 +25,7 @@ test("createBuiltinConnectorPlugins respects platform support", () => {
 		"google-calendar",
 		"google-contacts",
 		"todoist",
+		"google-keep",
 	]);
 });
 

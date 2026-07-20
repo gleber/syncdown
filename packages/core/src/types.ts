@@ -116,6 +116,11 @@ export interface TodoistTokenConnectionConfig extends BaseConnectionConfig {
 	kind: "todoist-token";
 }
 
+export interface GoogleKeepTokenConnectionConfig extends BaseConnectionConfig {
+	kind: "google-keep-token";
+	accountEmail?: string;
+}
+
 export interface AppleNotesLocalConnectionConfig extends BaseConnectionConfig {
 	kind: "apple-notes-local";
 }
@@ -129,7 +134,8 @@ export type ConnectionConfig =
 	| NotionTokenConnectionConfig
 	| NotionOAuthConnectionConfig
 	| AppleNotesLocalConnectionConfig
-	| TodoistTokenConnectionConfig;
+	| TodoistTokenConnectionConfig
+	| GoogleKeepTokenConnectionConfig;
 
 export type GmailSyncFilter = "primary" | "primary-important" | "inbox";
 
@@ -190,13 +196,21 @@ export type TodoistIntegrationConfig = BaseIntegrationConfig<
 	TodoistIntegrationSettings
 >;
 
+export type GoogleKeepIntegrationSettings = Record<string, never>;
+
+export type GoogleKeepIntegrationConfig = BaseIntegrationConfig<
+	"google-keep",
+	GoogleKeepIntegrationSettings
+>;
+
 export type IntegrationConfig =
 	| NotionIntegrationConfig
 	| GmailIntegrationConfig
 	| CalendarIntegrationConfig
 	| AppleNotesIntegrationConfig
 	| ContactsIntegrationConfig
-	| TodoistIntegrationConfig;
+	| TodoistIntegrationConfig
+	| GoogleKeepIntegrationConfig;
 
 export interface SyncdownConfig {
 	outputDir?: string;
@@ -233,7 +247,8 @@ export interface DocumentPathHint {
 		| "calendar-event"
 		| "note"
 		| "contact"
-		| "todoist-tasks";
+		| "todoist-tasks"
+		| "keep-note";
 	databaseName?: string;
 	gmailAccountEmail?: string;
 	calendarName?: string;
@@ -285,6 +300,10 @@ export interface SourceMetadata extends Record<string, unknown> {
 	contactAddresses?: string[];
 	contactUrls?: string[];
 	contactSource?: "person" | "other-contact";
+	keepNoteId?: string;
+	keepColor?: string;
+	keepPinned?: boolean;
+	keepLabels?: string[];
 }
 
 export interface SourceSnapshot {

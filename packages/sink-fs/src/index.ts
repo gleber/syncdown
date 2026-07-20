@@ -1,14 +1,14 @@
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
-
 import type {
 	DocumentSink,
+	LocalStateModifications,
 	SinkWriteRequest,
 	SinkWriteResult,
+	SourceRecord,
+	StoredSourceSnapshot,
 } from "@syncdown/core";
-
 import { compareLocalFsState } from "./parse.js";
-import type { SourceRecord, StoredSourceSnapshot, LocalStateModifications } from "@syncdown/core";
 
 class FileSystemSink implements DocumentSink {
 	async write(request: SinkWriteRequest): Promise<SinkWriteResult> {
@@ -46,9 +46,14 @@ class FileSystemSink implements DocumentSink {
 		outputDir: string,
 		integrationId: string,
 		stateRecords: SourceRecord[],
-		stateSnapshots: Map<string, StoredSourceSnapshot>
+		stateSnapshots: Map<string, StoredSourceSnapshot>,
 	): Promise<LocalStateModifications> {
-		return compareLocalFsState(outputDir, integrationId, stateRecords, stateSnapshots);
+		return compareLocalFsState(
+			outputDir,
+			integrationId,
+			stateRecords,
+			stateSnapshots,
+		);
 	}
 }
 

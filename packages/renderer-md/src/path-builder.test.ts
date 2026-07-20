@@ -205,3 +205,31 @@ test("buildRelativePath routes non-database notion pages under pages folders", (
 
 	expect(buildRelativePath(document)).toBe("notion/pages/overview-page-999.md");
 });
+
+test("buildRelativePath keeps active notes at the connector root and archives under archive", () => {
+	const active = createSnapshot({
+		connectorId: "google-keep",
+		sourceId: "note-123",
+		entityType: "keep-note",
+		title: "Shopping List",
+		slug: "shopping-list",
+		pathHint: { kind: "keep-note" },
+		metadata: { keepNoteId: "note-123" },
+	});
+	expect(buildRelativePath(active)).toBe(
+		"google-keep/shopping-list-note-123.md",
+	);
+
+	const archived = createSnapshot({
+		connectorId: "google-keep",
+		sourceId: "note-456",
+		entityType: "keep-note",
+		title: "Old Note",
+		slug: "old-note",
+		pathHint: { kind: "keep-note" },
+		metadata: { keepNoteId: "note-456", archived: true },
+	});
+	expect(buildRelativePath(archived)).toBe(
+		"google-keep/archive/old-note-note-456.md",
+	);
+});

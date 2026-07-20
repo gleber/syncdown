@@ -1,3 +1,4 @@
+import { createGpsOAuthClient } from "@syncdown/connector-google-keep";
 import { createBuiltinConnectorPlugins } from "@syncdown/connectors";
 import type {
 	AppIo,
@@ -103,13 +104,14 @@ function printConnectUsage(io: AppIo): void {
 		"  syncdown connect notion --token <value|--stdin>",
 		"  syncdown connect notion --oauth [--client-id <id>] [--client-secret <secret>] [--no-browser]",
 		"  syncdown connect todoist --token <value|--stdin>",
+		"  syncdown connect google-keep --email <addr> --token <value|--stdin>",
 	]) {
 		io.error(line);
 	}
 }
 
 function printDisconnectUsage(io: AppIo): void {
-	io.error("Usage: syncdown disconnect <google|notion|todoist>");
+	io.error("Usage: syncdown disconnect <google|notion|todoist|google-keep>");
 }
 
 async function resolveTokenValue(rawValue: string): Promise<string> {
@@ -457,6 +459,77 @@ async function connectTodoist(
 	return EXIT_CODES.OK;
 }
 
+function getGoogleKeepConnection(config: SyncdownConfig) {
+	return config.connections.find(
+		(candidate) => candidate.kind === "google-keep-token",
+	);
+}
+
+async function connectGoogleKeep(
+	io: AppIo,
+	args: string[],
+	secrets: SecretsStore,
+): Promise<number> {
+	const { flags, error } = parseFlags(args, ["--email", "--token"], []);
+	if (error) {
+		io.error(error);
+		printConnectUsage(io);
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	const emailFlag = flags.get("--email");
+	const tokenFlag = flags.get("--token");
+	if (typeof emailFlag !== "string" || typeof tokenFlag !== "string") {
+		printConnectUsage(io);
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	const email = emailFlag.trim();
+	if (!email) {
+		io.error("google-keep email cannot be empty.");
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	let token = (await resolveTokenValue(tokenFlag)).trim();
+	if (!token) {
+		io.error("google-keep token cannot be empty.");
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	if (token.startsWith("oauth2_4/")) {
+		try {
+			token = await createGpsOAuthClient().exchangeAuthToken(email, token);
+		} catch (exchangeError) {
+			io.error(
+				toErrorMessage(
+					exchangeError,
+					"Failed to exchange Google Keep oauth token.",
+				),
+			);
+			return EXIT_CODES.CONFIG_ERROR;
+		}
+	}
+
+	if (!token.startsWith("aas_et/")) {
+		io.error("google-keep token must start with oauth2_4/ or aas_et/.");
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	const { config, paths } = await loadConfig();
+	const connection = getGoogleKeepConnection(config);
+	if (!connection || connection.kind !== "google-keep-token") {
+		io.error("Missing default Google Keep connection.");
+		return EXIT_CODES.CONFIG_ERROR;
+	}
+
+	connection.accountEmail = email;
+	await secrets.setSecret(connection.id, token, paths);
+	getDefaultIntegration(config, "google-keep").enabled = true;
+	await writeConfig(paths, config);
+	io.write("Google Keep connected. google-keep.enabled=true");
+	return EXIT_CODES.OK;
+}
+
 export async function handleConnectCommand(
 	io: AppIo,
 	argv: string[],
@@ -473,6 +546,9 @@ export async function handleConnectCommand(
 	}
 	if (provider === "todoist") {
 		return connectTodoist(io, args, secrets);
+	}
+	if (provider === "google-keep") {
+		return connectGoogleKeep(io, args, secrets);
 	}
 
 	printConnectUsage(io);
@@ -531,6 +607,25 @@ async function disconnectTodoist(
 	return EXIT_CODES.OK;
 }
 
+async function disconnectGoogleKeep(
+	io: AppIo,
+	secrets: SecretsStore,
+): Promise<number> {
+	const { config, paths } = await loadConfig();
+	const connection = getGoogleKeepConnection(config);
+	if (connection) {
+		await secrets.deleteSecret(connection.id, paths);
+		if (connection.kind === "google-keep-token") {
+			connection.accountEmail = undefined;
+		}
+	}
+	getDefaultIntegration(config, "google-keep").enabled = false;
+	await writeConfig(paths, config);
+	io.write("Disconnected Google Keep. Deleted stored Google Keep credentials.");
+	io.write("Disabled: google-keep");
+	return EXIT_CODES.OK;
+}
+
 export async function handleDisconnectCommand(
 	io: AppIo,
 	argv: string[],
@@ -549,6 +644,9 @@ export async function handleDisconnectCommand(
 	}
 	if (provider === "todoist") {
 		return disconnectTodoist(io, secrets);
+	}
+	if (provider === "google-keep") {
+		return disconnectGoogleKeep(io, secrets);
 	}
 
 	printDisconnectUsage(io);

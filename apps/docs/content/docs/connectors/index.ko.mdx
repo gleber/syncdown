@@ -1,15 +1,16 @@
 ---
 title: 커넥터
-description: Notion, Gmail, Google Calendar, Apple Notes별 설정과 동작을 설명합니다.
+description: Notion, Gmail, Google Calendar, Google Keep, Apple Notes별 설정과 동작을 설명합니다.
 ---
 
 # 커넥터
 
-현재 `syncdown`에는 네 가지 커넥터가 있습니다.
+현재 `syncdown`에는 다음 커넥터가 있습니다.
 
 - [Notion](/docs/connectors/notion)
 - [Gmail](/docs/connectors/gmail)
 - [Google Calendar](/docs/connectors/google-calendar)
+- [Google Keep](/docs/connectors/google-keep)
 - [Apple Notes](/docs/connectors/apple-notes)
 
 모든 커넥터는 같은 렌더러와 파일시스템 sink를 통해 Markdown을 쓰지만, 접근 방식, 데이터 발견 방식, 동기화 의미론은 서로 다릅니다.
@@ -28,4 +29,5 @@ description: Notion, Gmail, Google Calendar, Apple Notes별 설정과 동작을 
 - [Notion](/docs/connectors/notion)은 토큰과 OAuth 설정, 페이지 탐색, 데이터 소스 동작을 다룹니다.
 - [Gmail](/docs/connectors/gmail)은 Google OAuth, Primary 범위 동기화 필터, Gmail history 기반 증분 동작을 다룹니다.
 - [Google Calendar](/docs/connectors/google-calendar)는 공유 Google OAuth, 캘린더 선택, 이벤트 증분 동기화를 다룹니다.
+- [Google Keep](/docs/connectors/google-keep)는 마스터 토큰 인증, 노트/체크리스트 Markdown 출력, 증분 동기화를 다룹니다.
 - [Apple Notes](/docs/connectors/apple-notes)는 macOS 전용 로컬 접근, 계정/폴더 출력 경로, 현재 제한 사항을 다룹니다.

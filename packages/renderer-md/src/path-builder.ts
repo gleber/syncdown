@@ -71,6 +71,13 @@ function getFileIdentifier(document: SourceSnapshot): string {
 		}
 	}
 
+	if (document.pathHint.kind === "keep-note") {
+		const noteId = document.metadata.keepNoteId;
+		if (typeof noteId === "string" && noteId.trim().length > 0) {
+			return noteId;
+		}
+	}
+
 	return document.sourceId;
 }
 
@@ -180,6 +187,12 @@ export function buildRelativePath(document: SourceSnapshot): string {
 				"default",
 		);
 		return path.join(document.connectorId, accountSegment, fileName);
+	}
+
+	if (document.pathHint.kind === "keep-note") {
+		return document.metadata.archived
+			? path.join(document.connectorId, "archive", fileName)
+			: path.join(document.connectorId, fileName);
 	}
 
 	return path.join(document.connectorId, "pages", fileName);

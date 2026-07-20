@@ -88,7 +88,8 @@ function getIntegrationReaders(
 		| "google-calendar"
 		| "google-contacts"
 		| "apple-notes"
-		| "todoist",
+		| "todoist"
+		| "google-keep",
 	prefix: string,
 ): Array<[string, ConfigValueReader]> {
 	return [
@@ -191,6 +192,33 @@ export function getConfigReaders(
 				return "<unset>";
 			}
 			return formatSecretPresence(secrets, paths, secretName);
+		});
+	}
+
+	if (hasConnector("google-keep", platform)) {
+		for (const [key, reader] of getIntegrationReaders(
+			"google-keep",
+			"googleKeep",
+		)) {
+			readers.set(key, reader);
+		}
+		readers.set("googleKeep.token", async ({ config, secrets, paths }) => {
+			const connection = config.connections.find(
+				(candidate) => candidate.kind === "google-keep-token",
+			);
+			if (!connection) {
+				return "<unset>";
+			}
+			return formatSecretPresence(secrets, paths, connection.id);
+		});
+		readers.set("googleKeep.email", ({ config }) => {
+			const connection = config.connections.find(
+				(candidate) => candidate.kind === "google-keep-token",
+			);
+			if (!connection || connection.kind !== "google-keep-token") {
+				return "<unset>";
+			}
+			return connection.accountEmail?.trim() || "<unset>";
 		});
 	}
 

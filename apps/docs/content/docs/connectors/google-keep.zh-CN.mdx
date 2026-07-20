@@ -1,0 +1,36 @@
+---
+title: Google Keep
+description: 使用主令牌连接 Google Keep，并将笔记同步为 Markdown。
+---
+
+# Google Keep
+
+Google Keep 连接器会将 Keep 单向增量同步到本地 Markdown。
+
+## 重要说明
+
+Google Keep **没有面向个人账号的官方 API**。本连接器使用与 Android Keep 应用相同的非官方内部 API（gpsoauth 主令牌）。它适用于个人 `@gmail.com` 账号，但 Google 可能在无通知的情况下更改或限制该接口。请使用较保守的同步间隔（默认 `1h`），断开连接后请在 Google 账号设置中撤销对应设备。
+
+## 认证设置
+
+1. 在浏览器打开 [EmbeddedSetup](https://accounts.google.com/EmbeddedSetup) 并登录。
+2. 从开发者工具复制 `oauth_token` Cookie，其值以 `oauth2_4/` 开头。
+3. 使用账号邮箱和该令牌（或已兑换的 `aas_et/` 主令牌）连接：
+
+```sh
+syncdown connect google-keep --email you@gmail.com --token 'oauth2_4/...'
+```
+
+断开连接：
+
+```sh
+syncdown disconnect google-keep
+```
+
+## 运行
+
+```sh
+syncdown run --connector google-keep
+```
+
+输出写入 `google-keep/notes/` 与 `google-keep/archive/`。回收站中的笔记按删除处理；v1 不下载图片/音频。

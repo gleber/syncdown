@@ -1,0 +1,36 @@
+---
+title: Google Keep
+description: マスタートークンで Google Keep を接続し、ノートを Markdown に同期します。
+---
+
+# Google Keep
+
+Google Keep コネクタは、Keep からローカル Markdown への一方向の増分同期を行います。
+
+## 重要な注意
+
+Google Keep には**公式の個人向け API がありません**。このコネクタは Android Keep アプリと同じ非公式内部 API（gpsoauth マスタートークン）を使います。個人の `@gmail.com` アカウントで動作しますが、Google が予告なく変更・制限する可能性があります。同期間隔は控えめ（既定 `1h`）にし、切断後は Google アカウント設定から端末を取り消してください。
+
+## 認証セットアップ
+
+1. ブラウザで [EmbeddedSetup](https://accounts.google.com/EmbeddedSetup) を開き、サインインします。
+2. 開発者ツールから `oauth_token` Cookie をコピーします。値は `oauth2_4/` で始まります。
+3. アカウントのメールとトークン（または既に交換済みの `aas_et/` マスタートークン）で接続します。
+
+```sh
+syncdown connect google-keep --email you@gmail.com --token 'oauth2_4/...'
+```
+
+切断:
+
+```sh
+syncdown disconnect google-keep
+```
+
+## 実行
+
+```sh
+syncdown run --connector google-keep
+```
+
+出力は `google-keep/notes/` と `google-keep/archive/` 配下に書き込まれます。ゴミ箱のノートは削除として扱われ、画像・音声は v1 ではダウンロードされません。

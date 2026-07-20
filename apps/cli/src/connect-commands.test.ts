@@ -431,8 +431,83 @@ test("disconnect rejects unknown providers", async () => {
 
 		expect(exitCode).toBe(EXIT_CODES.CONFIG_ERROR);
 		expect(errors).toContain(
-			"Usage: syncdown disconnect <google|notion|todoist>",
+			"Usage: syncdown disconnect <google|notion|todoist|google-keep>",
 		);
+	});
+});
+
+test("connect google-keep stores token, email, and enables the integration", async () => {
+	const { io, writes } = createIoCapture();
+	const { secrets, values } = createMemorySecrets();
+
+	await withTempCliPaths(async (paths) => {
+		const exitCode = await handleConnectCommand(
+			io,
+			connectArgv(
+				"connect",
+				"google-keep",
+				"--email",
+				"user@example.com",
+				"--token",
+				"aas_et/master-token",
+			),
+			secrets,
+			{ authService: createAuthServiceStub() },
+		);
+
+		expect(exitCode).toBe(EXIT_CODES.OK);
+		expect(values.get("google-keep-token-default")).toBe("aas_et/master-token");
+		const config = await ensureConfig(paths);
+		expect(getDefaultIntegration(config, "google-keep").enabled).toBe(true);
+		const connection = config.connections.find(
+			(candidate) => candidate.kind === "google-keep-token",
+		);
+		expect(
+			connection?.kind === "google-keep-token" && connection.accountEmail,
+		).toBe("user@example.com");
+		expect(writes).toContain("Google Keep connected. google-keep.enabled=true");
+	});
+});
+
+test("disconnect google-keep deletes credentials and disables the integration", async () => {
+	const { io, writes } = createIoCapture();
+	const { secrets, values } = createMemorySecrets({
+		"google-keep-token-default": "aas_et/master-token",
+	});
+
+	await withTempCliPaths(async (paths) => {
+		const config = await ensureConfig(paths);
+		const connection = config.connections.find(
+			(candidate) => candidate.kind === "google-keep-token",
+		);
+		if (!connection || connection.kind !== "google-keep-token") {
+			throw new Error("expected google-keep connection");
+		}
+		connection.accountEmail = "user@example.com";
+		getDefaultIntegration(config, "google-keep").enabled = true;
+		await writeConfig(paths, config);
+
+		const exitCode = await handleDisconnectCommand(
+			io,
+			connectArgv("disconnect", "google-keep"),
+			secrets,
+		);
+
+		expect(exitCode).toBe(EXIT_CODES.OK);
+		expect(values.has("google-keep-token-default")).toBe(false);
+		const updated = await ensureConfig(paths);
+		expect(getDefaultIntegration(updated, "google-keep").enabled).toBe(false);
+		const updatedConnection = updated.connections.find(
+			(candidate) => candidate.kind === "google-keep-token",
+		);
+		expect(
+			updatedConnection?.kind === "google-keep-token" &&
+				updatedConnection.accountEmail,
+		).toBeUndefined();
+		expect(writes).toContain(
+			"Disconnected Google Keep. Deleted stored Google Keep credentials.",
+		);
+		expect(writes).toContain("Disabled: google-keep");
 	});
 });
 

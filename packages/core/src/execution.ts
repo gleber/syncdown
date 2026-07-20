@@ -570,19 +570,35 @@ export async function runIntegrationSync({
 		}
 
 		if (plugin.push && services.sink.analyzeLocalModifications) {
-			const stateRecords = await services.state.listSourceRecords(integration.id);
+			const stateRecords = await services.state.listSourceRecords(
+				integration.id,
+			);
 			const stateSnapshots = new Map();
 			for (const record of stateRecords) {
-				const snapshot = await services.state.getSourceSnapshot(integration.id, record.sourceId);
+				const snapshot = await services.state.getSourceSnapshot(
+					integration.id,
+					record.sourceId,
+				);
 				if (snapshot) {
 					stateSnapshots.set(record.sourceId, snapshot);
 				}
 			}
 
-			const localChanges = await services.sink.analyzeLocalModifications(outputDir, integration.id, stateRecords, stateSnapshots);
+			const localChanges = await services.sink.analyzeLocalModifications(
+				outputDir,
+				integration.id,
+				stateRecords,
+				stateSnapshots,
+			);
 
-			if (localChanges.createdSources.length > 0 || localChanges.updatedSources.length > 0 || localChanges.deletedSourceIds.length > 0) {
-				io.write(`Pushing local changes: ${localChanges.createdSources.length} created, ${localChanges.updatedSources.length} updated, ${localChanges.deletedSourceIds.length} deleted`);
+			if (
+				localChanges.createdSources.length > 0 ||
+				localChanges.updatedSources.length > 0 ||
+				localChanges.deletedSourceIds.length > 0
+			) {
+				io.write(
+					`Pushing local changes: ${localChanges.createdSources.length} created, ${localChanges.updatedSources.length} updated, ${localChanges.deletedSourceIds.length} deleted`,
+				);
 				const pushRequest = {
 					...request,
 					createdSources: localChanges.createdSources,
@@ -596,13 +612,17 @@ export async function runIntegrationSync({
 					runtime,
 				);
 				request.throwIfCancelled();
-				io.write(`Push finished: ${pushResult.pushedIds.length} pushed, ${pushResult.failedIds.length} failed`);
+				io.write(
+					`Push finished: ${pushResult.pushedIds.length} pushed, ${pushResult.failedIds.length} failed`,
+				);
 
 				// We wait for the next sync cycle to pull down the newly mapped IDs or updated state
 				// This allows the sync process to establish the correct ground-truth from the remote
 				// However, to prevent created files from being duplicated before sync runs, we may want to persist the mappings here
 				if (pushResult.createdSourceMappings) {
-					for (const [tempId, finalSnapshot] of Object.entries(pushResult.createdSourceMappings)) {
+					for (const [tempId, finalSnapshot] of Object.entries(
+						pushResult.createdSourceMappings,
+					)) {
 						await persistSource(finalSnapshot);
 					}
 				}

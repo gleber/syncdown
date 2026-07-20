@@ -900,16 +900,22 @@ class GoogleCalendarConnector implements Connector {
 
 		// Try to verify events scope. If missing, we can't push.
 		try {
-			await assertGoogleGrantedScopes(
-				fetch,
-				credentials,
-				["https://www.googleapis.com/auth/calendar.events"],
-			);
+			await assertGoogleGrantedScopes(fetch, credentials, [
+				"https://www.googleapis.com/auth/calendar.events",
+			]);
 		} catch (error) {
 			request.io.error(
 				"Google Calendar push failed: Missing 'calendar.events' scope. You may need to re-authenticate or update the connection.",
 			);
-			return { success: false, pushedIds, failedIds: [...request.createdSources.map(s => s.sourceId), ...request.updatedSources.map(s => s.sourceId), ...request.deletedSourceIds] };
+			return {
+				success: false,
+				pushedIds,
+				failedIds: [
+					...request.createdSources.map((s) => s.sourceId),
+					...request.updatedSources.map((s) => s.sourceId),
+					...request.deletedSourceIds,
+				],
+			};
 		}
 
 		const calendars = await this.adapter.listCalendars(credentials);
@@ -917,7 +923,9 @@ class GoogleCalendarConnector implements Connector {
 		const calendarSummaryMap = new Map(calendars.map((c) => [c.summary, c.id]));
 
 		// Helper to find calendar id
-		const getCalendarId = (snapshot: import("@syncdown/core").SourceSnapshot) => {
+		const getCalendarId = (
+			snapshot: import("@syncdown/core").SourceSnapshot,
+		) => {
 			const explicitlySet = snapshot.metadata.calendarId as string | undefined;
 			if (explicitlySet && calendarMap.has(explicitlySet)) {
 				return explicitlySet;
@@ -929,13 +937,20 @@ class GoogleCalendarConnector implements Connector {
 			return getSelectedCalendarIds(request)[0]; // fallback to first selected
 		};
 
-		const toEventDateTime = (val: unknown, allDay?: unknown): GoogleCalendarEventDateTime | null => {
+		const toEventDateTime = (
+			val: unknown,
+			allDay?: unknown,
+		): GoogleCalendarEventDateTime | null => {
 			if (typeof val !== "string") return null;
-			if (allDay === true || allDay === "true") return { date: val.split("T")[0] };
+			if (allDay === true || allDay === "true")
+				return { date: val.split("T")[0] };
 			return { dateTime: val };
 		};
 
-		const createdSourceMappings: Record<string, import("@syncdown/core").SourceSnapshot> = {};
+		const createdSourceMappings: Record<
+			string,
+			import("@syncdown/core").SourceSnapshot
+		> = {};
 
 		// 1. Handle creations
 		for (const source of request.createdSources) {
@@ -946,21 +961,38 @@ class GoogleCalendarConnector implements Connector {
 				const eventData: GoogleCalendarEvent = {
 					summary: source.snapshot.title,
 					description: source.snapshot.bodyMd,
-					location: (source.snapshot.metadata.calendarLocation as string) || null,
-					start: toEventDateTime(source.snapshot.metadata.calendarStartAt, source.snapshot.metadata.calendarAllDay),
-					end: toEventDateTime(source.snapshot.metadata.calendarEndAt, source.snapshot.metadata.calendarAllDay),
+					location:
+						(source.snapshot.metadata.calendarLocation as string) || null,
+					start: toEventDateTime(
+						source.snapshot.metadata.calendarStartAt,
+						source.snapshot.metadata.calendarAllDay,
+					),
+					end: toEventDateTime(
+						source.snapshot.metadata.calendarEndAt,
+						source.snapshot.metadata.calendarAllDay,
+					),
 				};
 
-				const createdEvent = await this.adapter.createEvent(credentials, calendarId, eventData);
+				const createdEvent = await this.adapter.createEvent(
+					credentials,
+					calendarId,
+					eventData,
+				);
 				if (!createdEvent.id) throw new Error("API did not return an event ID");
 
 				const calendarSummary = calendarMap.get(calendarId)!;
-				const mappedSnapshot = toSourceSnapshot(request.integration.id, calendarSummary, createdEvent);
+				const mappedSnapshot = toSourceSnapshot(
+					request.integration.id,
+					calendarSummary,
+					createdEvent,
+				);
 
 				createdSourceMappings[source.sourceId] = mappedSnapshot;
 				pushedIds.push(source.sourceId);
 			} catch (err) {
-				request.io.error(`Failed to create event ${source.snapshot.title}: ${err instanceof Error ? err.message : String(err)}`);
+				request.io.error(
+					`Failed to create event ${source.snapshot.title}: ${err instanceof Error ? err.message : String(err)}`,
+				);
 				failedIds.push(source.sourceId);
 			}
 		}
@@ -971,18 +1003,33 @@ class GoogleCalendarConnector implements Connector {
 				const calendarId = getCalendarId(source.snapshot);
 				if (!calendarId) throw new Error("No calendar selected");
 				const eventIdParts = source.sourceId.split(":");
-				const eventId = eventIdParts.length > 1 ? eventIdParts[1] : source.snapshot.metadata.calendarEventId as string;
+				const eventId =
+					eventIdParts.length > 1
+						? eventIdParts[1]
+						: (source.snapshot.metadata.calendarEventId as string);
 				if (!eventId) throw new Error("No event ID found");
 
 				// Conflict Resolution check
-				const priorRecord = await request.state.getSourceRecord(request.integration.id, source.sourceId);
+				const priorRecord = await request.state.getSourceRecord(
+					request.integration.id,
+					source.sourceId,
+				);
 				let bodyMd = source.snapshot.bodyMd;
 
 				if (priorRecord && priorRecord.sourceUpdatedAt) {
 					// We need to fetch the remote event to see if it was modified since we last pulled it
 					try {
-						const remoteEvent = await this.adapter.getEvent(credentials, calendarId, eventId);
-						if (remoteEvent && remoteEvent.updated && new Date(remoteEvent.updated) > new Date(priorRecord.sourceUpdatedAt)) {
+						const remoteEvent = await this.adapter.getEvent(
+							credentials,
+							calendarId,
+							eventId,
+						);
+						if (
+							remoteEvent &&
+							remoteEvent.updated &&
+							new Date(remoteEvent.updated) >
+								new Date(priorRecord.sourceUpdatedAt)
+						) {
 							// Remote was updated more recently than the version we based our local edits on.
 							// Last local write wins, but we append the remote changes.
 							bodyMd += `\n\n---\n**Conflict Note (${new Date().toISOString()})**\nOverwritten remote description:\n${remoteEvent.description ?? "(no description)"}`;
@@ -995,15 +1042,29 @@ class GoogleCalendarConnector implements Connector {
 				const eventData: GoogleCalendarEvent = {
 					summary: source.snapshot.title,
 					description: bodyMd,
-					location: (source.snapshot.metadata.calendarLocation as string) || null,
-					start: toEventDateTime(source.snapshot.metadata.calendarStartAt, source.snapshot.metadata.calendarAllDay),
-					end: toEventDateTime(source.snapshot.metadata.calendarEndAt, source.snapshot.metadata.calendarAllDay),
+					location:
+						(source.snapshot.metadata.calendarLocation as string) || null,
+					start: toEventDateTime(
+						source.snapshot.metadata.calendarStartAt,
+						source.snapshot.metadata.calendarAllDay,
+					),
+					end: toEventDateTime(
+						source.snapshot.metadata.calendarEndAt,
+						source.snapshot.metadata.calendarAllDay,
+					),
 				};
 
-				await this.adapter.updateEvent(credentials, calendarId, eventId, eventData);
+				await this.adapter.updateEvent(
+					credentials,
+					calendarId,
+					eventId,
+					eventData,
+				);
 				pushedIds.push(source.sourceId);
 			} catch (err) {
-				request.io.error(`Failed to update event ${source.sourceId}: ${err instanceof Error ? err.message : String(err)}`);
+				request.io.error(
+					`Failed to update event ${source.sourceId}: ${err instanceof Error ? err.message : String(err)}`,
+				);
 				failedIds.push(source.sourceId);
 			}
 		}
@@ -1012,14 +1073,17 @@ class GoogleCalendarConnector implements Connector {
 		for (const sourceId of request.deletedSourceIds) {
 			try {
 				const eventIdParts = sourceId.split(":");
-				if (eventIdParts.length !== 2) throw new Error("Invalid sourceId format");
+				if (eventIdParts.length !== 2)
+					throw new Error("Invalid sourceId format");
 				const calendarId = eventIdParts[0];
 				const eventId = eventIdParts[1];
 
 				await this.adapter.deleteEvent(credentials, calendarId, eventId);
 				pushedIds.push(sourceId);
 			} catch (err) {
-				request.io.error(`Failed to delete event ${sourceId}: ${err instanceof Error ? err.message : String(err)}`);
+				request.io.error(
+					`Failed to delete event ${sourceId}: ${err instanceof Error ? err.message : String(err)}`,
+				);
 				failedIds.push(sourceId);
 			}
 		}

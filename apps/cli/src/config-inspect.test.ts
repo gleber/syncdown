@@ -103,6 +103,9 @@ test("config show prints all config keys with secret presence", async () => {
 		expect(writes).toContain("googleCalendar.selectedCalendarIds=");
 		expect(writes).toContain("todoist.enabled=false");
 		expect(writes).toContain("todoist.token=<unset>");
+		expect(writes).toContain("googleKeep.enabled=false");
+		expect(writes).toContain("googleKeep.token=<unset>");
+		expect(writes).toContain("googleKeep.email=<unset>");
 	});
 });
 

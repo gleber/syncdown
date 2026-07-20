@@ -1,0 +1,36 @@
+---
+title: Google Keep
+description: 마스터 토큰으로 Google Keep을 연결하고 노트를 Markdown으로 동기화합니다.
+---
+
+# Google Keep
+
+Google Keep 커넥터는 Keep에서 로컬 Markdown으로 단방향 증분 동기화를 수행합니다.
+
+## 중요 안내
+
+Google Keep에는 **공식 개인용 API가 없습니다**. 이 커넥터는 Android Keep 앱과 동일한 비공식 내부 API(gpsoauth 마스터 토큰)를 사용합니다. 개인 `@gmail.com` 계정에서 동작하지만 Google이 예고 없이 변경·제한할 수 있습니다. 동기화 간격은 보수적으로(기본 `1h`) 두고, 연결 해제 후 Google 계정 설정에서 기기를 취소하세요.
+
+## 인증 설정
+
+1. 브라우저에서 [EmbeddedSetup](https://accounts.google.com/EmbeddedSetup)에 로그인한 뒤
+2. 개발자 도구에서 `oauth_token` 쿠키를 복사합니다. 값은 `oauth2_4/`로 시작합니다.
+3. 계정 이메일과 토큰(또는 이미 교환된 `aas_et/` 마스터 토큰)으로 연결합니다.
+
+```sh
+syncdown connect google-keep --email you@gmail.com --token 'oauth2_4/...'
+```
+
+연결 해제:
+
+```sh
+syncdown disconnect google-keep
+```
+
+## 실행
+
+```sh
+syncdown run --connector google-keep
+```
+
+출력은 `google-keep/notes/`와 `google-keep/archive/`에 저장됩니다. 휴지통 노트는 삭제로 처리되며, 이미지/오디오는 v1에서 다운로드하지 않습니다.

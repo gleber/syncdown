@@ -1,0 +1,78 @@
+---
+title: Google Keep
+description: Connect Google Keep with a master token and sync notes into Markdown.
+---
+
+# Google Keep
+
+The Google Keep connector performs a one-way incremental pull from Keep into local Markdown.
+
+## Important caveat
+
+Google Keep has **no official consumer API**. This connector uses the same reverse-engineered internal Keep API that the Android Keep app uses (via a gpsoauth master token). It works with personal `@gmail.com` accounts, but Google may change or restrict that interface without notice. Prefer a modest sync interval (default `1h`) and revoke the device from your Google account settings if you disconnect.
+
+## Auth setup
+
+1. Open [EmbeddedSetup](https://accounts.google.com/EmbeddedSetup) in a browser and sign in.
+2. From browser developer tools, copy the `oauth_token` cookie. The value starts with `oauth2_4/`.
+3. Connect with your account email and that token (or an already-exchanged `aas_et/` master token):
+
+```sh
+syncdown connect google-keep --email you@gmail.com --token 'oauth2_4/...'
+```
+
+`syncdown` exchanges `oauth2_4/…` for a long-lived master token once, stores the master token in the encrypted secrets store, and enables the integration.
+
+To disconnect:
+
+```sh
+syncdown disconnect google-keep
+```
+
+After disconnecting, revoke the Android device entry from your Google account security settings.
+
+## Headless config
+
+```sh
+syncdown config set google-keep.enabled true
+syncdown config set google-keep.email you@gmail.com
+printf '%s' "$GOOGLE_KEEP_MASTER_TOKEN" | syncdown config set google-keep.token --stdin
+```
+
+Inspect:
+
+```sh
+syncdown config get googleKeep.enabled
+syncdown config get googleKeep.email
+syncdown config get googleKeep.token
+```
+
+## What gets synced
+
+- note and checklist titles
+- note bodies and GFM task-list bodies for checklists
+- created / updated timestamps
+- archived and pinned flags
+- label names
+- Keep color metadata
+
+Trashed notes are treated as deletes. Image/audio blobs are not downloaded in v1.
+
+## Output layout
+
+```text
+google-keep/notes/<slug>-<id>.md
+google-keep/archive/<slug>-<id>.md
+```
+
+## Incremental behavior
+
+The connector stores a Keep version cursor plus a compact node cache. Later runs fetch only changed nodes and rebuild affected notes from the cache.
+
+If the server rejects a stale version, `syncdown` performs a full resync and purges local sources that no longer exist.
+
+## Run
+
+```sh
+syncdown run --connector google-keep
+```
